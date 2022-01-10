@@ -11,11 +11,11 @@ systems that have installed Apex MCU.
 
 ## Add-ons provided by this repository
 
-- **[Almond](/almond/README.md)**
+- **[APEX Voice - Powered by Almond](/almond/README.md)**
 
     Almond For Home Servers.
 
-- **[File editor](/configurator/README.md)**
+- **[APEX Configurator](/configurator/README.md)**
 
     Simple browser-based file editor for Apex MCU+.
 
@@ -27,7 +27,7 @@ systems that have installed Apex MCU.
 
     Voice assistant powered by Apex MCU+.
 
-- **[Mosquitto broker](/mosquitto/README.md)**
+- **[Apex MQTT Broker](/mosquitto/README.md)**
 
     An Open Source MQTT broker.
 
@@ -35,6 +35,6 @@ systems that have installed Apex MCU.
 
     Shutdown Windows machines remotely.
 
-- **[Samba share](/samba/README.md)**
+- **[APEX Samba Protocol](/samba/README.md)**
 
     Expose Apex MCU+ folders with SMB/CIFS.
