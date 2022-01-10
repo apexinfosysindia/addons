@@ -1,4 +1,4 @@
-# Apex MCU+ Add-on: Samba share
+# Apex MCU+ Add-on: Samba Protocol
 
 Share your configuration over the network using Windows file sharing.
 
