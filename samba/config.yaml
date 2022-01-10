@@ -1,6 +1,6 @@
 version: 9.5.1
 slug: samba
-name: APEX Samba Share
+name: APEX Samba Protocol
 description: Expose Apex MCU+ folders with SMB/CIFS
 url: https://github.com/apexinfosysindia/addons/tree/master/samba
 arch:
