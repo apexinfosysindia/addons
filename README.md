@@ -19,10 +19,6 @@ systems that have installed Apex MCU.
 
     Simple browser-based file editor for Apex MCU+.
 
-- **[Git pull](/git_pull/README.md)**
-
-    Load and update configuration files for Apex MCU+ from a Git repository.
-
 - **[Google Assistant SDK](/google_assistant/README.md)**
 
     A virtual personal assistant developed by Google.
@@ -30,10 +26,6 @@ systems that have installed Apex MCU.
 - **[Hey Ada!](/ada/README.md)**
 
     Voice assistant powered by Apex MCU+.
-
-- **[MariaDB](/mariadb/README.md)**
-
-    MariaDB database for Apex MCU+.
 
 - **[Mosquitto broker](/mosquitto/README.md)**
 
