@@ -1,4 +1,4 @@
-# Apex MCU+ Add-on: Samba share
+# Apex MCU+ Add-on: Samba Protocol
 
 ## Installation
 
