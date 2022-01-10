@@ -1,3 +1,0 @@
-#!/usr/bin/env bashio
-bashio::log.yellow "The 'apex' command is deprecated, please use 'amcu' instead!"
-amcu "$@"
