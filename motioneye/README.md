@@ -1,6 +1,6 @@
 # Apex MCU+ Community Add-on: motionEye
 
-[![Release][release-shield]][release] ![Project Stage][project-stage-shield] ![Project Maintenance][maintenance-shield]
+ ![Project Maintenance][maintenance-shield]
 
 Simple, elegant and feature-rich CCTV/NVR for your cameras.
 
