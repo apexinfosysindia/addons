@@ -38,7 +38,7 @@
 - Update Almond to 1.8.0
 - Rewrite onto S6 overlay
 - Reduce add-on image size
-- Updates Supervisor API token and endpoint
+- Updates APEX Supervisor API token and endpoint
 
 ## 0.9
 
@@ -54,7 +54,7 @@
 
 ## 0.6
 
-- Fix issue with restart / Hass.io token handling
+- Fix issue with restart / APEX Connect token handling
 
 ## 0.5
 
