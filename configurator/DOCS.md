@@ -1,4 +1,4 @@
-# Apex MCU+ Add-on: File editor
+# Apex MCU+ Add-on: Configurator
 
 ## Installation
 
