@@ -1,4 +1,4 @@
-# Apex MCU+ Add-on: File editor
+# Apex MCU+ Add-on: Configurator
 
 Browser-based configuration file editor for Apex MCU+.
 
@@ -6,7 +6,7 @@ Browser-based configuration file editor for Apex MCU+.
 
 ## About
 
-The File editor, formerly known as Configurator, is a small web-app (you access it via web browser) that provides a
+APEX Configurator, is a small web-app (you access it via web browser) that provides a
 filesystem-browser and text-editor to modify files on the machine the File editor is
 running on.
 
