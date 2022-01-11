@@ -6,7 +6,7 @@
 
 ## 1.1.0
 
-- Renaming Home Assistant
+- Renaming Apex MCU
 - Convert to s6-overlay
 - Support new audio backend
 
@@ -22,7 +22,7 @@
 
 ## 0.8.0
 
-- Fix API url for access to Home Assistant
+- Fix API url for access to Apex MCU.
 
 ## 0.7.0
 
@@ -31,7 +31,7 @@
 ## 0.6.0
 
 - Update Ada to 0.7
-- Add options to change TTS / STT Home Assistant provider
+- Add options to change TTS / STT APEX provider
 
 ## 0.5.0
 
