@@ -1,6 +1,5 @@
 # Apex MCU+ Community Add-on: Z-Wave JS to MQTT
-
-[![Release][release-shield]][release] ![Project Stage][project-stage-shield] ![Project Maintenance][maintenance-shield]
+ ![Project Stage][project-stage-shield] ![Project Maintenance][maintenance-shield]
 
 Fully configurable Z-Wave JS to MQTT gateway and control panel.
 
