@@ -1,7 +1,7 @@
 # Apex MCU+ Community Add-on: motionEye
 
 motionEye is a popular frontend to the camera software called motion. This
-add-on provides both, allowing you to add your camera's to your Hass.io setup.
+add-on provides both, allowing you to add your camera's to your Apex MCU+ setup.
 
 motionEye is Open Source CCTV and NVR, that is elegant and really easy to use.
 It can be used as a Baby Monitor, Construction Site Montage Viewer,
