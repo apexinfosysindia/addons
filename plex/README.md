@@ -1,6 +1,6 @@
 # Apex MCU+ Community Add-on: Plex Media Server
 
-[![Release][release-shield]][release] ![Project Stage][project-stage-shield] ![Project Maintenance][maintenance-shield]
+![Project Stage][project-stage-shield] ![Project Maintenance][maintenance-shield]
 
 Your recorded media, live TV, online news, and podcasts, beautifully organized
 and ready to stream.
