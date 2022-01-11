@@ -30,7 +30,7 @@ Example add-on configuration:
 
 ```yaml
 log_level: info
-claim_code: claim-cAMrqFrenckFU4x445Tn
+claim_code: claim-cAMrqAdFU4x445Tn
 webtools: true
 ```
 
@@ -110,24 +110,6 @@ Example:
 ```txt
 http://apexconnect.local:32400,http://192.168.1.88:32400,https://amcu-id.cloud.apexinfosys.in:32400
 ```
-
-## Known issues and limitations
-
-- This add-on does support ARM-based devices, nevertheless, they must
-  at least be an ARMv7 device. (Raspberry Pi 1 and Zero is not supported).
-- This add-on will be able to run on a Raspberry Pi. While it still can be
-  useful, don't expect too much. In general, the Pi lacks the processing power
-  and is probably not able to stream your media; therefore it is not
-  recommended using this add-on on such a device.
-- This add-on cannot add/mount any additional USB or other devices for you.
-  This is a Apex MCU+ limitation. In case you'd like to use extra devices,
-  you'll have to modify the host system yourself and is not supported by the
-  Apex MCU+ project or Community add-ons team.
-- A Plex Pass gives you exclusive access to new features, which are
-  available through a Beta version channel of the media server. At this
-  time, running this "Beta" version, is not supported by this add-on.
-- This add-on does not support Plex over DLNA.
-
 
 ## License
 
