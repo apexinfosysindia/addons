@@ -1,7 +1,7 @@
 version: 2.0.1
 slug: almond
-name: Almond
-description: The open-source, privacy-preserving voice assistant
+name: APEX Voice - Powered by Almond
+description: The open-source, privacy-preserving voice assistant for Apex MCU.
 url: https://github.com/apexinfosysindia/addons/blob/master/almond
 arch:
   - armv7
