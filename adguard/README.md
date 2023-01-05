@@ -1,4 +1,4 @@
-# Home Assistant Community Add-on: AdGuard Home
+# Apex MCU+ Add-on: AdGuard Home
 
 [![GitHub Release][releases-shield]][releases]
 ![Project Stage][project-stage-shield]
