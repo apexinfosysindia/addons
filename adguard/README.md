@@ -23,8 +23,6 @@ using a client-side program.
 AdGuard Home provides a beautiful, easy and feature-rich web interface to
 easily manage the filtering process and its settings.
 
-[:books: Read the full add-on documentation][docs]
-
 ## Contributing
 
 This is an active open-source project. We are always open to people who want to
