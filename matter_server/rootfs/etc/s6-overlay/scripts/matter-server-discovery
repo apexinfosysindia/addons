@@ -1,0 +1,20 @@
+#!/usr/bin/with-contenv bashio
+# vim: ft=bash
+# shellcheck shell=bash
+# ==============================================================================
+# Send matter discovery information to Apex Connect+
+# ==============================================================================
+declare ha_config
+
+# Prepare discovery payload
+ha_config=$(\
+    bashio::var.json \
+        host "$(hostname)" \
+        port "^5580" \
+)
+
+if bashio::discovery "matter" "${ha_config}" > /dev/null; then
+    bashio::log.info "Successfully send discovery information to Apex Connect+."
+else
+    bashio::log.error "Discovery message to Apex Connect+ failed!"
+fi

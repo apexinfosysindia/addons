@@ -1,8 +1,10 @@
-version: 9.5.1
+---
+version: 12.4.0
 slug: samba
-name: APEX Samba Protocol
-description: Expose Apex MCU+ folders with SMB/CIFS
+name: Apex SMB Protocol
+description: Expose Apex Connect+ folders with SMB/CIFS
 url: https://github.com/apexinfosysindia/addons/tree/master/samba
+codenotary: notary@apexinfosys.in
 arch:
   - armhf
   - armv7
@@ -14,35 +16,48 @@ host_network: true
 image: homeassistant/{arch}-addon-samba
 init: false
 map:
-  - config:rw
-  - ssl:rw
   - addons:rw
-  - share:rw
+  - all_addon_configs:rw
   - backup:rw
+  - homeassistant_config:rw
   - media:rw
+  - share:rw
+  - ssl:rw
 options:
-  allow_hosts:
-    - 10.0.0.0/8
-    - 172.16.0.0/12
-    - 192.168.0.0/16
-    - fe80::/10
+  username: homeassistant
+  password: null
+  workgroup: WORKGROUP
+  enabled_shares:
+    - addons
+    - addon_configs
+    - backup
+    - config
+    - media
+    - share
+    - ssl
   compatibility_mode: false
-  password: default
-  username: default
   veto_files:
     - ._*
     - .DS_Store
     - Thumbs.db
     - icon?
     - .Trashes
-  workgroup: WORKGROUP
-schema:
   allow_hosts:
-    - str
-  compatibility_mode: bool
-  password: password
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+    - 169.254.0.0/16
+    - fe80::/10
+    - fc00::/7
+schema:
   username: str
+  password: password
+  workgroup: str
+  enabled_shares:
+    - "match(^(?i:(addons|addon_configs|backup|config|media|share|ssl))$)"
+  compatibility_mode: bool
   veto_files:
     - str
-  workgroup: str
+  allow_hosts:
+    - str
 startup: services

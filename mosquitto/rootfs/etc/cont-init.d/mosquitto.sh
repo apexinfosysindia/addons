@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
 # ==============================================================================
 # Configures mosquitto
 # ==============================================================================
@@ -31,12 +32,12 @@ else
 fi
 
 # Set up discovery user
-password=$(np -p "${discovery_password}")
-echo "apexconnect:${password}" >> "${PW}"
-echo "user apexconnect" >> "${ACL}"
+password=$(pw -p "${discovery_password}")
+echo "homeassistant:${password}" >> "${PW}"
+echo "user homeassistant" >> "${ACL}"
 
 # Set up service user
-password=$(np -p "${service_password}")
+password=$(pw -p "${service_password}")
 echo "addons:${password}" >> "${PW}"
 echo "user addons" >> "${ACL}"
 
@@ -49,7 +50,12 @@ for login in $(bashio::config 'logins|keys'); do
   password=$(bashio::config "logins[${login}].password")
 
   bashio::log.info "Setting up user ${username}"
-  password=$(np -p "${password}")
+  if ! bashio::config.true "logins[${login}].password_pre_hashed"
+  then
+      password=$(pw -p "${password}")
+  else
+      bashio::log.info "Using pre-hashed password for ${username}"
+  fi
   echo "${username}:${password}" >> "${PW}"
   echo "user ${username}" >> "${ACL}"
 done
@@ -79,6 +85,7 @@ bashio::var.json \
   keyfile "${keyfile}" \
   require_certificate "^$(bashio::config 'require_certificate')" \
   ssl "^${ssl}" \
+  debug "^$(bashio::config 'debug')" \
   | tempio \
     -template /usr/share/tempio/mosquitto.gtpl \
     -out /etc/mosquitto/mosquitto.conf

@@ -1,4 +1,5 @@
-#!/usr/bin/env bashio
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
 set -e
 
 # Read from STDIN aliases to send shutdown
@@ -27,7 +28,7 @@ while read -r input; do
 
         bashio::log.info "Shutdown $input -> $ADDRESS"
         if ! msg="$(net rpc shutdown -I "$ADDRESS" -U "$CREDENTIALS" -t "$DELAY" -C "$MESSAGE")"; then
-            bashio::log.error "Shutdown fails -> $msg"
+            bashio::log.error "Shutdown failed: $msg"
         fi
     done
 done

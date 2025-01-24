@@ -10,9 +10,9 @@
   "host_network": true,
   "map": ["config:rw"],
   "options": {
-    "hostname": "amcu-uuid.cloud.apexinfosys.in",
+    "hostname": "user.cloud.apexinfosys.in",
     "ssh_port": "22",
-    "username": "AMCU ID",
+    "username": "APEX ID",
     "remote_forwarding": ["4440:localhost:1702"],
     "local_forwarding": [""],
     "other_ssh_options": "-v",

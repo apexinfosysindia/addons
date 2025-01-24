@@ -1,17 +1,17 @@
-# Apex MCU+ Add-on: Configurator
+# Apex Connect+ Add-on: File editor
 
-Browser-based configuration file editor for Apex MCU+.
+Browser-based configuration file editor for Apex Connect+.
 
 ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield]
 
 ## About
 
-APEX Configurator, is a small web-app (you access it via web browser) that provides a
+The File editor, formerly known as Configurator, is a small web-app (you access it via web browser) that provides a
 filesystem-browser and text-editor to modify files on the machine the File editor is
 running on.
 
 It is powered by Ace editor, which supports syntax highlighting for various
-code/markup languages. YAML files (the default language for Apex MCU+
+code/markup languages. YAML files (the default language for Apex Connect+
 configuration files) will be automatically checked for syntax errors while editing.
 
 ## Features
@@ -21,9 +21,9 @@ configuration files) will be automatically checked for syntax errors while editi
 - Stage, stash and commit changes in Git repositories, create and switch between
   branches, push to remotes, view diffs.
 - Lists with available entities, triggers, events, conditions and services.
-- Restart Apex MCU+ directly with the click of a button. Reloading groups,
+- Restart Apex Connect+ directly with the click of a button. Reloading groups,
   automations, etc. can be done as well. An API password is required.
-- Direct links to Apex MCU+ documentation and icons.
+- Direct links to Apex Connect+ documentation and icons.
 - Execute shell commands within the add-on container.
 - Editor settings are saved in your browser.
 - And much more…

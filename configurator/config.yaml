@@ -1,8 +1,10 @@
-version: 5.3.3
+---
+version: 5.8.0
 slug: configurator
-name: Apex MCU+ Configurator
-description: Simple browser-based file editor for Apex MCU+
+name: Apex MCU Configurator
+description: Simple browser-based file editor for Apex Connect+
 url: https://github.com/apexinfosysindia/addons/tree/master/configurator
+codenotary: notary@apexinfosys.in
 arch:
   - armhf
   - armv7
@@ -15,8 +17,9 @@ image: homeassistant/{arch}-addon-configurator
 ingress: true
 init: false
 map:
+  - all_addon_configs:rw
   - backup:rw
-  - config:rw
+  - homeassistant_config:rw
   - media:rw
   - share:rw
   - ssl:rw

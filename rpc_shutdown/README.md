@@ -1,4 +1,4 @@
-# Apex MCU+ Add-on: RPC Shutdown
+# Apex Connect+ Add-on: RPC Shutdown
 
 Shutdown Windows machines remotely.
 
@@ -6,7 +6,7 @@ Shutdown Windows machines remotely.
 
 ## About
 
-Allows you to shut down Windows Computers with a service call from Apex MCU+.
+Allows you to shut down Windows Computers with a service call from Apex Connect+.
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg

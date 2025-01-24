@@ -1,4 +1,4 @@
-# Apex MCU+ Community Add-on: AirCast
+# Apex Connect+ Add-on: AirCast
 
 Apple devices use AirPlay to send audio to other devices, but this is not
 compatible with Google's Chromecast. This add-on tries to solve this
@@ -11,11 +11,9 @@ and the real Chromecast player.
 ## Installation
 
 The installation of this add-on is pretty straightforward and not different in
-comparison to installing any other Apex MCU+ add-on.
+comparison to installing any other Apex Connect+ add-on.
 
-1. Search for the “AirCast” add-on in the Supervisor add-on store
-   and install it.
-1. Install the "AirCast" add-on.
+1. Click the "Install" button to install the add-on.
 1. Start the "AirCast" add-on
 1. Check the logs of the "AirCast" add-on to see if everything went well.
 
@@ -146,8 +144,8 @@ lack of audio. Note that `latency_rtp` does not delay playback start.
 
 ## Tweaking Aircast
 
-Aircast creates a configuration file called `aircast.xml` in your Home
-Assistant configuration directory. This file allows you to tweak each device
+Aircast creates a configuration file called `aircast.xml` in the add-on
+configuration directory. This file allows you to tweak each device
 separately. Every time it finds a new device, it will be added to that file.
 
 > **NOTE**: It is HIGHLY recommended to stop the addon before making changes
@@ -173,11 +171,15 @@ based on the following:
 - `MINOR`: Backwards-compatible new features and enhancements.
 - `PATCH`: Backwards-compatible bugfixes and package updates.
 
+## Support
+
+You could also [open an issue here][issue] GitHub.
+
 ## License
 
 MIT License
 
-Copyright (c) 2017-2022 Apex Infosys India
+Copyright (c) 2017-2024 Franck Nijhof
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

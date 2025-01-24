@@ -1,4 +1,10 @@
-# Apex MCU+ Add-on: Google Assistant SDK
+# Apex Connect+ Add-on: Google Assistant SDK
+
+> [!CAUTION] > **Deprecation notice**
+> The [Google Assistant SDK for device][google-assistant-sdk] Python library
+> this add-on depends on is no longer developed and has been archived. The
+> OAuth out-of-band (OOB) flow used by the add-on has been deprecated as well.
+> Hence a new setup is currently no longer possible.
 
 A virtual personal assistant developed by Google.
 
@@ -8,18 +14,19 @@ A virtual personal assistant developed by Google.
 
 [Google Assistant][google-assistant] is an AI-powered voice assistant that runs on the Raspberry Pi and x86 platforms and interact via the [DialogFlow][dialogflow-integration] integration with Home-Assistant. You can also use [Google Actions][google-actions] to extend its functionality.
 
-This add-on allows you to access Google Assistant using the microphone and speaker attached to the computer or device running Apex MCU+. You can say "Ok Google" followed by your command, and Google Assistant will answer your request.
+This add-on allows you to access Google Assistant using the microphone and speaker attached to the computer or device running Apex Connect+. You can say "Ok Google" followed by your command, and Google Assistant will answer your request.
 
-## ℹ️ Integration your mobile or Google/Nest Home with Apex MCU+
+## ℹ️ Integration your mobile or Google/Nest Home with Apex Connect+
 
-If you want to use Google Assistant (for example, from your phone or Google Home device) to interact with your Apex MCU+ managed devices, then you want the [Google Assistant integration][google-assistant-integration].
+If you want to use Google Assistant (for example, from your phone or Google Home device) to interact with your Apex Connect+ managed devices, then you want the [Google Assistant integration][google-assistant-integration].
 
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
 [armhf-shield]: https://img.shields.io/badge/armhf-no-red.svg
 [armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
-[dialogflow-integration]: https://apexinfosys.in/integrations/dialogflow/
+[dialogflow-integration]: https://www.apexinfosys.in/integrations/dialogflow/
 [google-actions]: https://actions.google.com/
-[google-assistant-integration]: https://apexinfosys.in/integrations/google_assistant/
+[google-assistant-integration]: https://www.apexinfosys.in/integrations/google_assistant/
 [google-assistant]: https://assistant.google.com/
+[google-assistant-sdk]: https://github.com/googlesamples/assistant-sdk-python
 [i386-shield]: https://img.shields.io/badge/i386-no-red.svg
 [aarch64-shield]: https://img.shields.io/badge/aarch64-no-red.svg

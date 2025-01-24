@@ -1,14 +1,10 @@
 ## What’s changed
 
-## 🚀 Enhancements
-
-- Add logo and icon @apexsmart (#125)
-
-## 🧰 Maintenance
-
-- 🚀 Update CI to latest version @apexsmart (#124)
-- 🎆 Updates maintenance/license year to 2022 @apexsmart (#127)
-
 ## ⬆️ Dependency updates
 
-- ⬆️ Upgrades add-on base image to 5.2.3 @apexsmart (#128)
+- ⬆️ Update ghcr.io/hassio-addons/debian-base Docker tag to v7.5.1 @renovate ([#211](https://github.com/apexinfosysindia/addon-aircast/pull/211))
+- ⬆️ Update ghcr.io/hassio-addons/debian-base Docker tag to v7.5.2 @renovate ([#212](https://github.com/apexinfosysindia/addon-aircast/pull/212))
+- ⬆️ Update ghcr.io/hassio-addons/debian-base Docker tag to v7.6.0 @renovate ([#213](https://github.com/apexinfosysindia/addon-aircast/pull/213))
+- ⬆️: migrate renovate config @renovate ([#214](https://github.com/apexinfosysindia/addon-aircast/pull/214))
+- ⬆️ Update ghcr.io/hassio-addons/debian-base Docker tag to v7.6.1 @renovate ([#215](https://github.com/apexinfosysindia/addon-aircast/pull/215))
+- ⬆️ Update ghcr.io/hassio-addons/debian-base Docker tag to v7.6.2 @renovate ([#216](https://github.com/apexinfosysindia/addon-aircast/pull/216))

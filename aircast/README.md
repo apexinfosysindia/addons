@@ -1,6 +1,4 @@
-# Apex MCU+ Community Add-on: AirCast
-
-[![Release][release-shield]][release] ![Project Stage][project-stage-shield] ![Project Maintenance][maintenance-shield]
+# Apex Connect+ Add-on: AirCast
 
 AirPlay capabilities for your Chromecast players.
 

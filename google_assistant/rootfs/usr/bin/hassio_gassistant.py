@@ -1,4 +1,4 @@
-"""Apex MCU+ Google Assistant."""
+"""Apex Connect+ Google Assistant."""
 import json
 import sys
 from pathlib import Path

@@ -1,0 +1,18 @@
+# Apex Connect+ Add-on: OpenThread Border Router Add-on
+
+OpenThread Border Router add-on. The add-on uses the upstream OpenThread
+Border Router implementation and wraps it as an add-on for Apex Connect+.
+
+**NOTE:** This requires a supported 802.15.4 capable radio with OpenThread
+RCP firmware.
+
+![Supports aarch64 Architecture][aarch64-shield]
+![Supports amd64 Architecture][amd64-shield]
+
+## About
+
+This add-on allows you to form or join a Thread network and make Apex Connect+
+a Thread Border Router.
+
+[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
+[amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg

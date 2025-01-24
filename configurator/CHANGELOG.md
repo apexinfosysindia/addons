@@ -1,8 +1,56 @@
 # Changelog
 
+## 5.8.0
+
+- Update base image to Alpine 3.19
+
+## 5.7.0
+
+- Use new location for accessing the Apex Connect+ configuration folder using `/homeassistant`
+- Add access to the new public configuration folders of add-ons
+- Upgrade to Alpine 3.18
+- Remove unneeded pip configuration when building add-on
+- Remove unused variable in finish script
+
+## 5.6.0
+
+- Update base image to Alpine 3.17
+- Migrate old style S6 Overlay service scripts to new `s6-rc.d` style
+- Add Docker healthchecks
+
+## 5.5.1
+
+- Fix Apex Connect+ wheels path
+
+## 5.5.0
+
+- Update base image to Alpine 3.16
+  - Bumps `git` to 2.36.3
+  - Bumps `ssh` to OpenSSH_9.0p1
+  - Bumps `python3` to 3.10.9
+
+## 5.4.2
+
+- Bugfix: Fix page load with special characters in states
+
+## 5.4.1
+
+- Bugfix: Disable Ace-internal yaml-linting
+- Disable internal check for new releases
+
+## 5.4.0
+
+- Add Generate UUID menu item
+- Harmonize Apex Connect+ term
+- Rename Components to integrations
+- Remove images for libraries
+- Update jQuery to 3.6.0
+- Update js-yaml to 4.1.0
+- Update Ace Editor to 1.9.6
+
 ## 5.3.3
 
-- Fix Apex MCU+ API endpoint
+- Fix Apex Connect+ API endpoint
 
 ## 5.3.2
 
@@ -108,7 +156,7 @@
 - Update Python to version 3.7
 - Update Configurator to version 0.3.5
 - Migrate Add-on to new Ingress
-- Pin Apex MCU+ requirements to 0.91.1
+- Pin Apex Connect+ requirements to 0.91.1
 
 ## 2.1
 
@@ -165,4 +213,4 @@
 ## 0.2.4
 
 - YAML lint support
-- Support new AMCU token system
+- Support new Hass.io token system

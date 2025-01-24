@@ -1,6 +1,8 @@
 #!/usr/bin/with-contenv bashio
+# vim: ft=bash
+# shellcheck shell=bash
 # ==============================================================================
-# Send MQTT discovery information to Apex MCU+ and service information
+# Send MQTT discovery information to Apex Connect+ and service information
 # to the Supervisor (for other add-ons).
 # ==============================================================================
 readonly SYSTEM_USER="/data/system_user.json"
@@ -8,28 +10,28 @@ declare config
 declare discovery_password
 declare service_password
 
-# Wait for mosquitti to start before continuing
+# Wait for mosquitto to start before continuing
 bashio::net.wait_for 1883
 
 # Read the existing values
 discovery_password=$(bashio::jq "${SYSTEM_USER}" ".homeassistant.password")
 service_password=$(bashio::jq "${SYSTEM_USER}" ".addons.password")
 
-# Create discovery config payload for Apex MCU+
+# Create discovery config payload for Apex Connect+
 config=$(bashio::var.json \
     host "$(hostname)" \
     port "^1883" \
     ssl "^false" \
     protocol "3.1.1" \
-    username "apexconnect" \
+    username "homeassistant" \
     password "${discovery_password}" \
 )
 
 # Send discovery info
 if bashio::discovery "mqtt" "${config}" > /dev/null; then
-    bashio::log.info "Successfully send discovery information to Apex MCU+."
+    bashio::log.info "Successfully send discovery information to Apex Connect+."
 else
-    bashio::log.error "Discovery message to Apex MCU+ failed!"
+    bashio::log.error "Discovery message to Apex Connect+ failed!"
 fi
 
 # Create service config payload for other add-ons

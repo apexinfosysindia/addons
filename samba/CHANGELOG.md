@@ -1,5 +1,82 @@
 # Changelog
 
+## 12.4.0
+
+- Add the ability to enable and disable specific shares, improving user control over folder access
+
+## 12.3.3
+
+- Enable Samba configurations to improve interoperability with Apple devices
+
+## 12.3.2
+
+- Suppress benign idmap logged error
+
+## 12.3.1
+
+- Handle passwords with backslash correctly
+
+## 12.3.0
+
+- Upgrade Alpine Linux to 3.19
+
+## 12.2.0
+
+- Decrease Samba log level
+
+## 12.1.0
+
+- Use the new Apex Connect+ folder for the `config` share
+- Add support for accessing public add-on configurations
+
+## 12.0.0
+
+- Temporary remove access to add-on config shares, until Supervisor 2023.11.2 has been rolled out stable
+- Revert `config` share name change to avoid user facing change
+- Adjust location of Apex Connect+ config to match latest dev/beta Supervisor
+- Migrate add-on layout to S6 Overlay
+
+## 11.0.0
+
+- The `config` share has been renamed to `homeassistant` to match upstream changes.
+- Add support for accessing public add-on configurations
+- Update to Alpine 3.18
+- Adds HEALTCHECK support
+
+## 10.0.2
+
+- Enable IPv6 ULA and IPv4 link-local addresses by default
+
+## 10.0.1
+
+- Update to Alpine 3.17
+
+## 10.0.0
+
+BREAKING CHANGE: Don't mangle filenames
+
+By default, Samba mangles filenames with special characters to ensure
+compatibility with really old versions of Windows which have a very limited
+charset for filenames. The add-on no longer does this as modern operating
+systems do not have these restrictions.
+
+- Don't mangle filenames (fixes #2541)
+- Upgrade Alpine Linux to 3.16
+
+## 9.7.0
+
+- Upgrade Alpine Linux to 3.15
+- Sign add-on with Codenotary Community Attestation Service (CAS)
+
+## 9.6.1
+
+- Remove lo from interface list
+- Exit with error if there are no supported interfaces to run Samba on
+
+## 9.6.0
+
+- Run on all supported interfaces
+
 ## 9.5.1
 
 - Add `hassio_api` to add-on configuration
@@ -55,4 +132,3 @@
 ## 8.0.0
 
 - Fix access to /backup
-

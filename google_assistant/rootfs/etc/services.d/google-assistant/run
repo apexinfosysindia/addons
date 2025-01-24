@@ -23,6 +23,6 @@ elif ! bashio::fs.file_exists "${CRED_JSON}"; then
     bashio::exit.nok "You need initialize Google Assistant with a client secret JSON!"
 fi
 
-bashio::log.info "Starting Apex MCU+ GAssisant SDK..."
+bashio::log.info "Starting Apex Connect+ GAssisant SDK..."
 exec python3 /usr/bin/hassio_gassistant.py \
     "${CRED_JSON}" "${PROJECT_ID}" "${MODEL_ID}" "${FEEDBACK}"

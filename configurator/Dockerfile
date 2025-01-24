@@ -1,6 +1,8 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+
 # Setup base
 ARG BUILD_ARCH
 ARG CONFIGURATOR_VERSION
@@ -11,9 +13,6 @@ RUN \
         py3-pip \
         python3 \
     && pip3 install \
-        --no-cache-dir \
-        --prefer-binary \
-        --find-links "https://wheels.home-assistant.io/alpine-3.14/${BUILD_ARCH}/" \
         hass-configurator=="${CONFIGURATOR_VERSION}" \
     \
     && find /usr/local \
@@ -23,3 +22,6 @@ RUN \
 
 # Copy data
 COPY rootfs /
+
+# Health check
+HEALTHCHECK CMD curl --fail http://127.0.0.1:8099 || exit 1

@@ -1,10 +1,10 @@
-# Apex MCU+ Add-on: Configurator
+# Apex Connect+ Add-on: File editor
 
 ## Installation
 
 Follow these steps to get the add-on installed on your system:
 
-1. Navigate in your Apex MCU+ frontend to **Supervisor** -> **Add-on Store**.
+1. Navigate in your Apex Connect+ frontend to **Settings** -> **Add-ons** -> **Add-on store**.
 2. Find the "File editor" add-on and click it.
 3. Click on the "INSTALL" button.
 
@@ -38,7 +38,8 @@ Set it to `true` to list directories first, `false` otherwise.
 
 ### Option: `enforce_basepath` (required)
 
-If set to `true`, access is limited to files within the `/config` directory.
+If set to `true`, access is limited to files within the `/homeassistant` directory
+(also known as the `/config` folder inside Apex Connect+ itself).
 
 ### Option: `git` (required)
 
@@ -57,3 +58,19 @@ A list of filenames containing SSH private keys. These can be used to allow for 
 
 - This add-on can only be used via Ingress and has no direct access.
 
+## Support
+
+Got questions?
+
+You have several options to get them answered:
+
+- The [Apex Connect+ Discord Chat Server][discord].
+- The Apex Connect+ [Community Forum][forum].
+- Join the [Reddit subreddit][reddit] in [/r/homeassistant][reddit]
+
+In case you've found a bug, please [open an issue on our GitHub][issue].
+
+[discord]: https://discord.gg/c5DvZ4e
+[forum]: https://community.apexinfosys.in
+[issue]: https://github.com/apexinfosysindia/addons/issues
+[reddit]: https://reddit.com/r/homeassistant

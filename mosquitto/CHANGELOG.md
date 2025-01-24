@@ -1,5 +1,63 @@
 # Changelog
 
+## 6.5.0
+
+- Update base image to Debian 12 (bookworm)
+- Update mosquitto to version 2.0.20
+- Update mosquitto-go-auth to version 2.1.0
+- Update libwebsockets to version 4.3.3
+
+## 6.4.1
+
+- Increase default max_queued_messages to 8192 to fix dropped messages during Apex Connect+ startup
+
+## 6.4.0
+
+- Update mosquitto to 2.0.18
+
+## 6.3.1
+
+- Add ability to use a pre-hashed password for custom logins
+
+## 6.3.0
+
+- Update mosquitto to 2.0.17
+
+## 6.2.1
+
+- Add explicit dependencies for dynamic security plugin and asynchronous name resolver
+
+## 6.2.0
+
+- Update mosquitto to 2.0.15
+- Update libwebsockets to 4.3.2 (fixes Unable to create websockets listener)
+
+## 6.1.3
+
+- Change timestamp format in logs
+
+## 6.1.2
+
+- Add debug option to help with issues
+
+## 6.1.1
+
+- Don't purge openssl in cleanup
+
+## 6.1.0
+
+- Update mosquitto to 2.0.11
+- Remove `mosquitto-auth-plug` and replace with `mosquitto-go-auth` 1.8.2
+- Change base image from Alpine to Debian (required for `mosquitto-go-auth`)
+
+Note: Mosquitto 2.0.0 did contain some breaking changes. We don't anticipate
+most users to be affected by them but if you have a heavily customized mosquitto
+config we would advise reviewing [their changelog](https://mosquitto.org/ChangeLog.txt).
+
+## 6.0.2
+
+- Mention homeassistant and addon users in ACL doc
+
 ## 6.0.1
 
 - Fix loading custom mosquitto configuration
@@ -7,7 +65,7 @@
 ## 6.0.0
 
 - Support for anonymous logins has been removed
-- Replaced Apex MCU+ authentication handling
+- Replaced Apex Connect+ authentication handling
 - Merged local account handling with authentication plugin
 - Add watchdog endpoint for health monitoring
 - Updated mosquitto to 1.6.12

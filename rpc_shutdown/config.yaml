@@ -1,4 +1,5 @@
-version: "2.2"
+---
+version: "2.5"
 slug: rpc_shutdown
 name: RPC Shutdown
 description: Shutdown Windows machines remotely
@@ -18,14 +19,15 @@ options:
       credentials: user%password
       delay: 0
       message:
-        Apex MCU+ is shutting down this PC. This cannot be canceled. Please
+        Apex Connect+ is shutting down this PC. This cannot be canceled. Please
         save your work!
 schema:
   computers:
     - address: str
       alias: match(^[\w-]*$)
-      credentials: match(^[^%]*(?:%[^%]*)?$)
+      credentials: match(^[^%]*(?:%.*)?$)
       delay: int(0,600)?
       message: str?
 startup: services
 stdin: true
+init: false

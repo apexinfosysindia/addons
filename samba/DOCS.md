@@ -1,20 +1,18 @@
-# Apex MCU+ Add-on: Samba Protocol
+# Apex Connect+ Add-on: Samba share
 
 ## Installation
 
 Follow these steps to get the add-on installed on your system:
 
-1. Navigate in your Apex MCU+ frontend to **Supervisor** -> **Add-on Store**.
+1. Navigate in your Apex Connect+ frontend to **Settings** -> **Add-ons** -> **Add-on store**.
 2. Find the "Samba share" add-on and click it.
 3. Click on the "INSTALL" button.
 
 ## How to use
 
 1. In the configuration section, set a username and password.
-   You can specify any username and password; these are not related in any way to the login credentials you use to log in to Apex MCU+ or to log in to the computer with which you will use Samba share.
-2. Save the configuration.
-3. Start the add-on.
-4. Check the add-on log output to see the result.
+   You can specify any username and password; these are not related in any way to the login credentials you use to log in to Apex Connect+ or to log in to the computer with which you will use Samba share.
+2. Review the enabled shares. Disable any you do not plan to use. Shares can be re-enabled later if needed.
 
 ## Connection
 
@@ -22,14 +20,15 @@ If you are on Windows you use `\\<IP_ADDRESS>\`, if you are on MacOS you use `sm
 
 This addon exposes the following directories over smb (samba):
 
-Directory | Description
--- | --
-`addons` | This is for your local add-ons.
-`backup` | This is for your backups.
-`config` | This is for your Apex MCU+ configuration.
-`media` | This is for local media files.
-`share` | This is for your data that is shared between add-ons and Apex MCU+.
-`ssl` | This is for your SSL certificates.
+| Directory       | Description                                                             |
+| --------------- | ----------------------------------------------------------------------- |
+| `addons`        | This is for your local add-ons.                                         |
+| `addon_configs` | This is for the configuration files of your add-ons.                    |
+| `backup`        | This is for your backups.                                               |
+| `config`        | This is for your Apex Connect+ configuration.                           |
+| `media`         | This is for local media files.                                          |
+| `share`         | This is for your data that is shared between add-ons and Apex Connect+. |
+| `ssl`           | This is for your SSL certificates.                                      |
 
 ## Configuration
 
@@ -37,13 +36,23 @@ Add-on configuration:
 
 ```yaml
 workgroup: WORKGROUP
-username: DEFAULT_USERNAME
-password: DEFAULT_PASSWORD
+username: homeassistant
+password: YOUR_PASSWORD
+enabled_shares:
+  - addons
+  - addon_configs
+  - backup
+  - config
+  - media
+  - share
+  - ssl
 allow_hosts:
   - 10.0.0.0/8
   - 172.16.0.0/12
   - 192.168.0.0/16
+  - 169.254.0.0/16
   - fe80::/10
+  - fc00::/7
 veto_files:
   - "._*"
   - ".DS_Store"
@@ -62,6 +71,10 @@ The username you would like to use to authenticate with the Samba server.
 ### Option: `password` (required)
 
 The password that goes with the username configured for authentication.
+
+### Option: `enabled_shares` (required)
+
+List of Samba shares that will be accessible. Any shares removed or commented out of the list will not be accessible.
 
 ### Option: `allow_hosts` (required)
 
@@ -82,4 +95,20 @@ when you absolutely need it and understand the possible consequences.
 
 Defaults to `false`.
 
-[repository]: https://github.com/hassio-addons/repository
+## Support
+
+Got questions?
+
+You have several options to get them answered:
+
+- The [Apex Connect+ Discord Chat Server][discord].
+- The Apex Connect+ [Community Forum][forum].
+- Join the [Reddit subreddit][reddit] in [/r/homeassistant][reddit]
+
+In case you've found a bug, please [open an issue on our GitHub][issue].
+
+[discord]: https://discord.gg/c5DvZ4e
+[forum]: https://community.apexinfosys.in
+[issue]: https://github.com/apexinfosysindia/addons/issues
+[reddit]: https://reddit.com/r/homeassistant
+[repository]: https://github.com/apexinfosysindia/repository

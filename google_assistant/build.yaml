@@ -1,10 +1,11 @@
+---
 build_from:
   amd64: ghcr.io/home-assistant/amd64-base-debian:buster
   armhf: ghcr.io/home-assistant/armhf-base-debian:buster
   armv7: ghcr.io/home-assistant/armv7-base-debian:buster
 codenotary:
-  signer: notary@home-assistant.io
-  base_image: notary@home-assistant.io
+  signer: notary@apexinfosys.in
+  base_image: notary@apexinfosys.in
 args:
   CHERRYPY_VERSION: 18.1.1
   GOOGLE_AUTH_VERSION: 1.6.3

@@ -1,10 +1,10 @@
-# Apex MCU+ Add-on: RPC Shutdown
+# Apex Connect+ Add-on: RPC Shutdown
 
 ## Installation
 
 Follow these steps to get the add-on installed on your system:
 
-1. Navigate in your Apex MCU+ frontend to **Supervisor** -> **Add-on Store**.
+1. Navigate in your Apex Connect+ frontend to **Settings** -> **Add-ons** -> **Add-on store**.
 2. Find the "RPC Shutdown" add-on and click it.
 3. Click on the "INSTALL" button.
 
@@ -25,12 +25,12 @@ computers:
     address: 192.168.0.1
     credentials: user%password
     delay: 0
-    message: Apex MCU+ is shutting down this PC. This cannot be canceled. Please save your work!
+    message: Apex Connect+ is shutting down this PC. This cannot be canceled. Please save your work!
   - alias: test-pc-2
     address: 192.168.0.2
     credentials: user%password
     delay: 0
-    message: Apex MCU+ is shutting down this PC. This cannot be canceled. Please save your work!
+    message: Apex Connect+ is shutting down this PC. This cannot be canceled. Please save your work!
 ```
 
 ### Option: `computers` (required)
@@ -45,22 +45,22 @@ Set an alias for this record, which becomes the name for the input.
 
 IP address or NetBIOS name of the computer to be able to shutdown.
 
-### Option:  `computers.credentials` (required)
+### Option: `computers.credentials` (required)
 
 Credentials for logging into the computer.
 Use a `%` as the delimiter of username and password.
 
-### Option:  `computers.delay` (optional)
+### Option: `computers.delay` (optional)
 
 A delay (in seconds) before shutting down the computer. This gives a user that happens to be using that computer time to save their work.
 
-### Option:  `computers.message` (optional)
+### Option: `computers.message` (optional)
 
 Show a custom message on the screen of the computer that will be shutdown.
 
-## Apex MCU+ configuration
+## Apex Connect+ configuration
 
-Use the following inside Apex MCU+ service call to use it:
+Use the following inside Apex Connect+ service call to use it:
 
 ```yaml
 service: hassio.addon_stdin
@@ -75,5 +75,19 @@ Each line explained:
 `data.addon: core_rpc_shutdown`: Tells the service to send the command to this add-on.
 `data.input: test-pc`: Alias name created for the computer in the add-on configuration, and shuts that one down.
 
+## Support
 
-[repository]: https://github.com/hassio-addons/repository
+Got questions?
+
+You have several options to get them answered:
+
+- The [Apex Connect+ Discord Chat Server][discord].
+- The Apex Connect+ [Community Forum][forum].
+- Join the [Reddit subreddit][reddit] in [/r/homeassistant][reddit]
+
+In case you've found a bug, please [open an issue on our GitHub][issue].
+
+[forum]: https://community.apexinfosys.in
+[issue]: https://github.com/apexinfosysindia/addons/issues
+[reddit]: https://reddit.com/r/homeassistant
+[discord]: https://www.apexinfosys.in/join-chat
