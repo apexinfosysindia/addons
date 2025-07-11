@@ -24,7 +24,7 @@ map:
   - share:rw
   - ssl:rw
 options:
-  username: homeassistant
+  username: apexconnect
   password: null
   workgroup: WORKGROUP
   enabled_shares:
