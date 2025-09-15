@@ -2,8 +2,8 @@
 
 Add-ons for Apex Connect+ allow you to extend the functionality
 around your Apex Connect+ setup. These add-ons can consist of an application
-that Apex Connect+ can integrate with (e.g., a [MQTT broker](/mosquitto/README.md) or allow access to your Apex Connect+ configuration (e.g., via [Samba](/samba/README.md) or using
-the [File Editor](/configurator/README.md)).
+that Apex Connect+ can integrate with (e.g., a [Apex MQTT broker](/mosquitto/README.md) or allow access to your Apex Connect+ configuration (e.g., via [Samba](/samba/README.md) or using
+the [Apex MCU Configurator](/configurator/README.md)).
 
 Add-ons can be installed and configured via the Apex Connect+ frontend on
 systems that have installed Apex Connect+.
