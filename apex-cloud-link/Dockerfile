@@ -3,6 +3,7 @@ FROM ${BUILD_FROM}
 
 # Add env
 ENV LANG C.UTF-8
+ENV LOG_LEVEL=warning
 
 # Install jq for reading config options
 RUN apk add --no-cache jq wget tar
