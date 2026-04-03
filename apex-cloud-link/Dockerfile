@@ -3,10 +3,12 @@ FROM ${BUILD_FROM}
 
 # Add env
 ENV LANG C.UTF-8
-ENV LOG_LEVEL=warning
 
 # Install jq for reading config options
 RUN apk add --no-cache jq wget tar
+
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/base-addon-banner && \
+    echo -e "#!/command/with-contenv bash\nexit 0" > /etc/s6-overlay/s6-rc.d/base-addon-banner/run
 
 # Copy root filesystem
 COPY rootfs /
