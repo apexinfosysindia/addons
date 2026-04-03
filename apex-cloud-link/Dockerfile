@@ -7,8 +7,7 @@ ENV LANG C.UTF-8
 # Install jq for reading config options
 RUN apk add --no-cache jq wget tar
 
-RUN mkdir -p /etc/s6-overlay/s6-rc.d/base-addon-banner && \
-    echo -e "#!/command/with-contenv bash\nexit 0" > /etc/s6-overlay/s6-rc.d/base-addon-banner/run
+RUN find /etc /package -path "*/base-addon-banner/up" -exec sh -c 'echo -e "#!/command/with-contenv bash\nexit 0" > "$1"' _ {} +
 
 # Copy root filesystem
 COPY rootfs /
