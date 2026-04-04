@@ -75,7 +75,7 @@ token = "${ACCESS_TOKEN}"
 [[proxies]]
 name = "ha_web_${SUBDOMAIN}"
 type = "http"
-localIP = "172.30.32.1"  # Standard ApexOS internal IP in Supervisor
+localIP = "127.0.0.1"  # Standard ApexOS internal IP in Supervisor
 localPort = 1702         # Standard ApexOS Port (1702)
 customDomains = ["${SUBDOMAIN}.cloud.apexinfosys.in"]
 TOML_EOF
