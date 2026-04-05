@@ -81,7 +81,7 @@ token = "${ACCESS_TOKEN}"
 
 # Define the local ApexOS proxy rule
 [[proxies]]
-name = "ha_web_${SUBDOMAIN}"
+name = "apex_web_${SUBDOMAIN}"
 type = "http"
 localIP = "127.0.0.1"   # Match the legacy SSH add-on target on host network
 localPort = 1702
