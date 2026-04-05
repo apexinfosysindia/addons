@@ -1,72 +1,43 @@
-# Apex Connect+ Add-ons: The official repository
+# Apex Cloud Link
 
-Add-ons for Apex Connect+ allow you to extend the functionality
-around your Apex Connect+ setup. These add-ons can consist of an application
-that Apex Connect+ can integrate with (e.g., a [Apex MQTT broker](/mosquitto/README.md) or allow access to your Apex Connect+ configuration (e.g., via [Samba](/samba/README.md) or using
-the [Apex MCU Configurator](/configurator/README.md)).
+ApexOS addon that connects your device to Cloud Connect using FRP and can optionally report fleet telemetry for admin-only device management.
 
-Add-ons can be installed and configured via the Apex Connect+ frontend on
-systems that have installed Apex Connect+.
+## What it does
+- Publishes ApexOS web endpoint over FRP HTTP using your subdomain
+- Authenticates the tunnel using your Cloud Connect access token metadata
+- Optionally publishes SSH over FRP TCP (`ssh_remote_port`)
+- Optionally reports device presence and logs to Cloud Connect admin fleet APIs
 
-## Add-ons provided by this repository
+## Required options
+- `subdomain`
+- `access_token`
 
-- **[CEC Scanner](/cec_scan/README.md)**
+## Fleet tracking options (admin-only)
+- `fleet_reporting_enabled` (default: `true`)
+- `cloud_api_url` (default: `https://cloud.apexinfosys.in`)
+- `device_uid` (optional stable id)
+- `device_name` (optional friendly display name)
 
-  Scan & discover HDMI CEC devices and their addresses.
+## Optional SSH publish options
+- `ssh_remote_port` (default: `0`, disabled)
+- `ssh_local_port` (default: `22`)
+- `ssh_remote_user` (default: `root`)
+- `ssh_auth_user` (default: `root`)
+- `ssh_authorized_keys_file` (optional explicit authorized_keys path)
 
-- **[deCONZ](/deconz/README.md)**
+When `ssh_remote_port` is greater than `0`, the addon appends a TCP FRP proxy to expose local SSH through FRPS.
 
-  Control a Zigbee network using ConBee or RaspBee hardware by Dresden Elektronik.
+## Fleet reporting flow
+1. Addon registers with Cloud Connect using `access_token` and device metadata
+2. Cloud Connect returns a per-device auth token
+3. Addon stores token at `/data/cloud_device_token`
+4. Addon sends periodic heartbeats and lifecycle logs
 
-- **[DHCP server](/dhcp_server/README.md)**
+## JIT SSH session handling
+- Addon polls Cloud Connect `/api/internal/devices/ssh-sync`
+- Pending sessions are added to target `authorized_keys`
+- Active sessions are kept until expiry
+- Revoked/expired sessions are removed from `authorized_keys`
+- Session marker files are stored under `/data/ssh_session_markers`
 
-  A simple DHCP server.
-
-- **[Dnsmasq](/dnsmasq/README.md)**
-
-  A simple DNS server.
-
-- **[Apex MCU Configurator](/configurator/README.md)**
-
-  Simple browser-based file editor for Apex Connect+.
-
-- **[Google Assistant SDK](/google_assistant/README.md)**
-
-  A virtual personal assistant developed by Google.
-
-- **[Apex MQTT Broker](/mosquitto/README.md)**
-
-  An Open Source MQTT broker.
-
-- **[RPC Shutdown](/rpc_shutdown/README.md)**
-
-  Shutdown Windows machines remotely.
-
-- **[Apex SMB Protocol](/samba/README.md)**
-
-  Share your configuration over the network using Windows file sharing.
-
-- **[TellStick](/tellstick/README.md)**
-
-  TellStick and TellStick Duo service.
-
-- **[Z-Wave JS](/zwave_js/README.md)**
-
-  Allow Apex Connect+ to talk to a Z-Wave Network via a USB Controller.
-
-## Support
-
-In case you've found a bug, please [open an issue on our GitHub][issue].
-
-## Developing your own add-ons
-
-In case you are interested in developing your own add-on, this
-repository can be a great source of inspiration. For more information
-about developing an add-on, please see our
-[documentation for developers][dev-docs].
-
-[forum]: https://community.apexinfosys.in
-[i386-shield]: https://img.shields.io/badge/i386-no-red.svg
-[issue]: https://github.com/apexinfosysindia/addons/issues
-[reddit]: https://reddit.com/r/homeassistant
-[dev-docs]: https://developers.apexinfosys.in/docs/add-ons/
+All fleet visibility and connect-command generation are admin-only in Cloud Connect (`/admin.html`).
