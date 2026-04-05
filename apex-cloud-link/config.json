@@ -1,0 +1,34 @@
+{
+  "name": "Apex Cloud Link",
+  "version": "1.0.0",
+  "slug": "apex_cloud_link",
+  "description": "Secure, automated remote access for your ApexOS instance.",
+  "url": "https://github.com/apexinfosysindia/addons/apex-cloud-link",
+  "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],
+  "startup": "application",
+  "boot": "auto",
+  "host_network": true,
+  "init": false,
+  "options": {
+    "subdomain": "",
+    "access_token": "",
+    "fleet_reporting_enabled": true,
+    "cloud_api_url": "https://cloud.apexinfosys.in",
+    "device_uid": "",
+    "device_name": "",
+    "ssh_remote_port": 0,
+    "ssh_local_port": 22,
+    "ssh_remote_user": "root"
+  },
+  "schema": {
+    "subdomain": "str",
+    "access_token": "str",
+    "fleet_reporting_enabled": "bool",
+    "cloud_api_url": "str",
+    "device_uid": "str",
+    "device_name": "str",
+    "ssh_remote_port": "int",
+    "ssh_local_port": "int",
+    "ssh_remote_user": "str"
+  }
+}

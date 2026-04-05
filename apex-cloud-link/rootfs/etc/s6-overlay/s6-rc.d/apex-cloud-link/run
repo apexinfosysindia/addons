@@ -1,0 +1,423 @@
+#!/usr/bin/with-contenv bashio
+set -e
+
+CONFIG_PATH=/data/options.json
+FRP_VERSION="0.56.0"
+FRP_SERVER_ADDR="cloud.apexinfosys.in"
+FRP_SERVER_PORT=7000
+FRP_DIR="/data/frp"
+FRPC_BIN="${FRP_DIR}/frpc"
+FRPC_CONFIG="/tmp/frpc.toml"
+DEVICE_TOKEN_PATH="/data/cloud_device_token"
+
+HEARTBEAT_INTERVAL=20
+HEARTBEAT_PID=""
+DEVICE_TOKEN=""
+
+SUBDOMAIN=$(bashio::config 'subdomain')
+ACCESS_TOKEN=$(bashio::config 'access_token')
+FLEET_REPORTING_ENABLED=$(bashio::config 'fleet_reporting_enabled')
+CLOUD_API_URL=$(bashio::config 'cloud_api_url')
+DEVICE_UID_OPTION=$(bashio::config 'device_uid')
+DEVICE_NAME_OPTION=$(bashio::config 'device_name')
+SSH_REMOTE_PORT_OPTION=$(bashio::config 'ssh_remote_port')
+SSH_LOCAL_PORT_OPTION=$(bashio::config 'ssh_local_port')
+SSH_REMOTE_USER_OPTION=$(bashio::config 'ssh_remote_user')
+
+SUBDOMAIN=${SUBDOMAIN//.cloud.apexinfosys.in/}
+
+is_truthy() {
+    case "$1" in
+        1|true|TRUE|True|yes|YES|Yes|on|ON|On)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+sanitize_uid() {
+    printf '%s' "$1" | tr -cd 'a-zA-Z0-9._-'
+}
+
+is_valid_port() {
+    case "$1" in
+        ''|*[!0-9]*)
+            return 1
+            ;;
+    esac
+
+    if [ "$1" -lt 1 ] || [ "$1" -gt 65535 ]; then
+        return 1
+    fi
+
+    return 0
+}
+
+sanitize_remote_user() {
+    case "$1" in
+        [a-zA-Z_][a-zA-Z0-9_-]*)
+            printf '%s' "$1"
+            ;;
+        *)
+            printf 'root'
+            ;;
+    esac
+}
+
+get_local_ips_csv() {
+    local ip_list=''
+
+    if command -v ip >/dev/null 2>&1; then
+        ip_list=$(ip -o -4 addr show scope global 2>/dev/null | awk '{split($4, parts, "/"); print parts[1]}' | paste -sd, -)
+    fi
+
+    if [ -z "$ip_list" ] && command -v hostname >/dev/null 2>&1; then
+        ip_list=$(hostname -i 2>/dev/null | tr ' ' ',' | sed 's/,$//')
+    fi
+
+    printf '%s' "$ip_list"
+}
+
+cloud_post() {
+    local endpoint="$1"
+    local payload="$2"
+    local token="$3"
+    local base_url="${CLOUD_API_URL%/}"
+    local url="${base_url}${endpoint}"
+
+    if [ -z "$token" ]; then
+        curl -fsS --max-time 12 \
+            -H "Content-Type: application/json" \
+            -X POST "$url" \
+            -d "$payload" 2>/dev/null || true
+        return
+    fi
+
+    curl -fsS --max-time 12 \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${token}" \
+        -X POST "$url" \
+        -d "$payload" 2>/dev/null || true
+}
+
+save_device_token() {
+    if [ -z "$DEVICE_TOKEN" ]; then
+        return
+    fi
+
+    printf '%s' "$DEVICE_TOKEN" > "$DEVICE_TOKEN_PATH"
+    chmod 600 "$DEVICE_TOKEN_PATH" || true
+}
+
+send_device_log() {
+    local level="$1"
+    local event_type="$2"
+    local message="$3"
+    local payload_json="$4"
+
+    if [ "$FLEET_ACTIVE" -ne 1 ] || [ -z "$DEVICE_TOKEN" ]; then
+        return
+    fi
+
+    local payload
+    if [ -n "$payload_json" ]; then
+        payload=$(jq -n \
+            --arg level "$level" \
+            --arg event_type "$event_type" \
+            --arg message "$message" \
+            --argjson payload "$payload_json" \
+            '{ level: $level, event_type: $event_type, message: $message, payload: $payload }')
+    else
+        payload=$(jq -n \
+            --arg level "$level" \
+            --arg event_type "$event_type" \
+            --arg message "$message" \
+            '{ level: $level, event_type: $event_type, message: $message }')
+    fi
+
+    cloud_post "/api/internal/devices/log" "$payload" "$DEVICE_TOKEN" >/dev/null
+}
+
+build_fleet_payload() {
+    local state="$1"
+    local local_ips_csv
+    local local_ips_json='[]'
+    local remote_port_json='null'
+
+    local_ips_csv=$(get_local_ips_csv)
+
+    if [ -n "$local_ips_csv" ]; then
+        local_ips_json=$(jq -n --arg csv "$local_ips_csv" '$csv | split(",")')
+    fi
+
+    if [ "$SSH_REMOTE_PORT" -gt 0 ]; then
+        remote_port_json="$SSH_REMOTE_PORT"
+    fi
+
+    jq -n \
+        --arg access_token "$ACCESS_TOKEN" \
+        --arg device_uid "$DEVICE_UID" \
+        --arg device_name "$DEVICE_NAME" \
+        --arg hostname "$DEVICE_HOSTNAME" \
+        --argjson local_ips "$local_ips_json" \
+        --argjson ssh_port "$SSH_LOCAL_PORT" \
+        --arg remote_user "$SSH_REMOTE_USER" \
+        --arg tunnel_host "$FRP_SERVER_ADDR" \
+        --argjson tunnel_port "$remote_port_json" \
+        --arg addon_version "apex-cloud-link" \
+        --arg agent_state "$state" \
+        '{
+            access_token: $access_token,
+            device_uid: $device_uid,
+            device_name: $device_name,
+            hostname: $hostname,
+            local_ips: $local_ips,
+            ssh_port: $ssh_port,
+            remote_user: $remote_user,
+            tunnel_host: $tunnel_host,
+            tunnel_port: $tunnel_port,
+            addon_version: $addon_version,
+            agent_state: $agent_state
+        }'
+}
+
+register_fleet_device() {
+    if [ "$FLEET_ACTIVE" -ne 1 ]; then
+        return
+    fi
+
+    local cached_token=''
+    if [ -f "$DEVICE_TOKEN_PATH" ]; then
+        cached_token=$(cat "$DEVICE_TOKEN_PATH" 2>/dev/null || true)
+    fi
+
+    local payload
+    local response
+    local next_interval
+
+    payload=$(build_fleet_payload "starting")
+    response=$(cloud_post "/api/internal/devices/register" "$payload" "")
+
+    if [ -n "$response" ]; then
+        DEVICE_TOKEN=$(printf '%s' "$response" | jq --raw-output '.device_token // empty')
+        next_interval=$(printf '%s' "$response" | jq --raw-output '.heartbeat_interval_seconds // empty')
+
+        case "$next_interval" in
+            ''|*[!0-9]*)
+                ;;
+            *)
+                HEARTBEAT_INTERVAL="$next_interval"
+                ;;
+        esac
+    fi
+
+    if [ -z "$DEVICE_TOKEN" ] && [ -n "$cached_token" ]; then
+        DEVICE_TOKEN="$cached_token"
+        bashio::log.warning "Fleet registration unavailable, reusing cached device token."
+    fi
+
+    if [ -n "$DEVICE_TOKEN" ]; then
+        save_device_token
+        bashio::log.info "Fleet reporting active for device uid=${DEVICE_UID}"
+    else
+        bashio::log.warning "Fleet registration failed, continuing without heartbeat reporting."
+        FLEET_ACTIVE=0
+    fi
+}
+
+send_heartbeat() {
+    local state="$1"
+
+    if [ "$FLEET_ACTIVE" -ne 1 ] || [ -z "$DEVICE_TOKEN" ]; then
+        return
+    fi
+
+    local payload
+    local response
+    local next_interval
+
+    payload=$(build_fleet_payload "$state")
+    response=$(cloud_post "/api/internal/devices/heartbeat" "$payload" "$DEVICE_TOKEN")
+
+    if [ -n "$response" ]; then
+        next_interval=$(printf '%s' "$response" | jq --raw-output '.heartbeat_interval_seconds // empty')
+        case "$next_interval" in
+            ''|*[!0-9]*)
+                ;;
+            *)
+                HEARTBEAT_INTERVAL="$next_interval"
+                ;;
+        esac
+    fi
+}
+
+start_heartbeat_loop() {
+    if [ "$FLEET_ACTIVE" -ne 1 ] || [ -z "$DEVICE_TOKEN" ]; then
+        return
+    fi
+
+    (
+        while true; do
+            send_heartbeat "running"
+            sleep "$HEARTBEAT_INTERVAL"
+        done
+    ) &
+
+    HEARTBEAT_PID=$!
+}
+
+cleanup() {
+    if [ -n "$HEARTBEAT_PID" ]; then
+        kill "$HEARTBEAT_PID" 2>/dev/null || true
+        wait "$HEARTBEAT_PID" 2>/dev/null || true
+    fi
+
+    if [ "$FLEET_ACTIVE" -eq 1 ] && [ -n "$DEVICE_TOKEN" ]; then
+        send_device_log "warn" "device.shutdown" "Cloud Link service stopped" ""
+        send_heartbeat "stopped"
+    fi
+}
+
+trap cleanup EXIT INT TERM
+
+if [ -z "$SUBDOMAIN" ] || [ -z "$ACCESS_TOKEN" ]; then
+    bashio::log.error "Subdomain or Access Token is missing"
+    bashio::log.error "Please register in Cloud Connect and configure the addon options"
+    sleep infinity
+fi
+
+if ! [[ "$SUBDOMAIN" =~ ^[a-z0-9-]{3,20}$ ]]; then
+    bashio::log.error "Invalid subdomain format. Use 3-20 lowercase letters, digits, or hyphen"
+    sleep infinity
+fi
+
+if is_valid_port "$SSH_REMOTE_PORT_OPTION"; then
+    SSH_REMOTE_PORT="$SSH_REMOTE_PORT_OPTION"
+else
+    SSH_REMOTE_PORT=0
+fi
+
+if is_valid_port "$SSH_LOCAL_PORT_OPTION"; then
+    SSH_LOCAL_PORT="$SSH_LOCAL_PORT_OPTION"
+else
+    SSH_LOCAL_PORT=22
+fi
+
+SSH_REMOTE_USER=$(sanitize_remote_user "$SSH_REMOTE_USER_OPTION")
+DEVICE_HOSTNAME=$(hostname 2>/dev/null || echo "unknown-device")
+DEVICE_UID=$(sanitize_uid "$DEVICE_UID_OPTION")
+DEVICE_NAME="$DEVICE_NAME_OPTION"
+FLEET_ACTIVE=0
+
+if [ -z "$DEVICE_UID" ]; then
+    DEVICE_UID="cloudlink-$(sanitize_uid "$DEVICE_HOSTNAME")-${SUBDOMAIN}"
+fi
+
+if [ -z "$DEVICE_NAME" ]; then
+    DEVICE_NAME="$DEVICE_HOSTNAME"
+fi
+
+if is_truthy "$FLEET_REPORTING_ENABLED" && [ -n "$CLOUD_API_URL" ]; then
+    FLEET_ACTIVE=1
+fi
+
+bashio::log.info "Initializing Cloud Link for ${SUBDOMAIN}.cloud.apexinfosys.in"
+
+ARCH=$(bashio::info.arch)
+FRP_ARCH=""
+
+case $ARCH in
+    aarch64) FRP_ARCH="arm64" ;;
+    amd64) FRP_ARCH="amd64" ;;
+    armhf|armv7) FRP_ARCH="arm" ;;
+    i386) FRP_ARCH="386" ;;
+    *)
+        bashio::log.error "Unsupported architecture: $ARCH"
+        sleep infinity
+        ;;
+esac
+
+if [ -f "$FRPC_BIN" ]; then
+    CURRENT_VERSION=$("$FRPC_BIN" -v 2>/dev/null || echo "0")
+    if [ "$CURRENT_VERSION" != "$FRP_VERSION" ]; then
+        bashio::log.info "FRP version mismatch (${CURRENT_VERSION} vs ${FRP_VERSION}), downloading update"
+        rm -f "$FRPC_BIN"
+    fi
+fi
+
+if [ ! -f "$FRPC_BIN" ]; then
+    bashio::log.info "Downloading FRP client for ${FRP_ARCH}"
+    mkdir -p "$FRP_DIR"
+
+    wget -qO /tmp/frp.tar.gz "https://github.com/fatedier/frp/releases/download/v${FRP_VERSION}/frp_${FRP_VERSION}_linux_${FRP_ARCH}.tar.gz"
+    tar -xzf /tmp/frp.tar.gz -C /tmp/
+    mv "/tmp/frp_${FRP_VERSION}_linux_${FRP_ARCH}/frpc" "$FRPC_BIN"
+    chmod +x "$FRPC_BIN"
+
+    rm -rf /tmp/frp*
+    bashio::log.info "FRP client download complete"
+fi
+
+cat << TOML_EOF > "$FRPC_CONFIG"
+serverAddr = "${FRP_SERVER_ADDR}"
+serverPort = ${FRP_SERVER_PORT}
+
+loginFailExit = false
+
+auth.method = "token"
+auth.token = "apexcloud_transport_v1"
+
+[metadatas]
+token = "${ACCESS_TOKEN}"
+
+[[proxies]]
+name = "ha_web_${SUBDOMAIN}"
+type = "http"
+localIP = "127.0.0.1"
+localPort = 1702
+customDomains = ["${SUBDOMAIN}.cloud.apexinfosys.in"]
+TOML_EOF
+
+if [ "$SSH_REMOTE_PORT" -gt 0 ]; then
+    cat << TOML_SSH_EOF >> "$FRPC_CONFIG"
+
+[[proxies]]
+name = "ha_ssh_${SUBDOMAIN}"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = ${SSH_LOCAL_PORT}
+remotePort = ${SSH_REMOTE_PORT}
+TOML_SSH_EOF
+
+    bashio::log.info "SSH TCP proxy enabled on ${FRP_SERVER_ADDR}:${SSH_REMOTE_PORT}"
+else
+    bashio::log.info "SSH TCP proxy is disabled (set ssh_remote_port > 0 to enable)"
+fi
+
+if [ "$FLEET_ACTIVE" -eq 1 ]; then
+    register_fleet_device
+    if [ "$FLEET_ACTIVE" -eq 1 ] && [ -n "$DEVICE_TOKEN" ]; then
+        send_device_log "info" "device.start" "Cloud Link service starting" "$(jq -n --arg subdomain "$SUBDOMAIN" --arg frp_addr "$FRP_SERVER_ADDR" --arg frp_port "$FRP_SERVER_PORT" --arg ssh_remote_port "$SSH_REMOTE_PORT" '{subdomain: $subdomain, frp_addr: $frp_addr, frp_port: $frp_port, ssh_remote_port: $ssh_remote_port}')"
+        send_heartbeat "starting"
+        start_heartbeat_loop
+    fi
+else
+    bashio::log.info "Fleet reporting disabled"
+fi
+
+bashio::log.info "Configuration generated. Connecting to cloud"
+
+set +e
+"$FRPC_BIN" -c "$FRPC_CONFIG"
+FRPC_EXIT_CODE=$?
+set -e
+
+if [ "$FRPC_EXIT_CODE" -eq 0 ]; then
+    send_device_log "warn" "frpc.exit" "FRPC process exited cleanly" "$(jq -n --arg code "$FRPC_EXIT_CODE" '{exit_code: $code}')"
+else
+    send_device_log "error" "frpc.exit" "FRPC process exited with error" "$(jq -n --arg code "$FRPC_EXIT_CODE" '{exit_code: $code}')"
+fi
+
+exit "$FRPC_EXIT_CODE"
