@@ -15,7 +15,7 @@ if [ -z "$SUBDOMAIN" ] || [ -z "$ACCESS_TOKEN" ]; then
     sleep infinity
 fi
 
-bashio::log.info "Initializing Apex Cloud Link for: ${SUBDOMAIN}.cloud.apexinfosys.in"
+echo "[ApexOS] Initializing Cloud Link for: ${SUBDOMAIN}.cloud.apexinfosys.in"
 
 # 1. Determine Architecture to download the correct FRP Client
 ARCH=$(bashio::info.arch)
@@ -33,12 +33,20 @@ case $ARCH in
         ;;
 esac
 
-# 2. Download FRPC if it doesn't exist (cached in /data so it survives restarts)
+# 2. Download FRPC if it doesn't exist or version mismatches (cached in /data so it survives restarts)
 FRP_DIR="/data/frp"
 FRPC_BIN="${FRP_DIR}/frpc"
 
+if [ -f "$FRPC_BIN" ]; then
+    CURRENT_VERSION=$("$FRPC_BIN" -v 2>/dev/null || echo "0")
+    if [ "$CURRENT_VERSION" != "$FRP_VERSION" ]; then
+        echo "[ApexOS] FRP version mismatch ($CURRENT_VERSION vs $FRP_VERSION), downloading update..."
+        rm -f "$FRPC_BIN"
+    fi
+fi
+
 if [ ! -f "$FRPC_BIN" ]; then
-    bashio::log.info "Downloading FRP Client for ${FRP_ARCH}..."
+    echo "[ApexOS] Downloading FRP Client for ${FRP_ARCH}..."
     mkdir -p $FRP_DIR
     
     # Download and extract just the client binary
@@ -49,7 +57,7 @@ if [ ! -f "$FRPC_BIN" ]; then
     
     # Cleanup
     rm -rf /tmp/frp*
-    bashio::log.info "Download complete."
+    echo "[ApexOS] Download complete."
 fi
 
 # 3. Generate the dynamic FRPC Configuration
@@ -63,11 +71,11 @@ serverPort = 7000
 # Tell FRP to retry connecting indefinitely if it drops
 loginFailExit = false
 
-# We need to send a dummy token to bypass FRPS's internal empty-token check
+# Shared FRP auth token to satisfy FRPS login verification
 auth.method = "token"
-auth.token = "dummy_token_to_bypass_frps_check"
+auth.token = "apexcloud_transport_v1"
 
-# Pass the actual user token as metadata so the webhook can read it
+# Pass the user access token as metadata so the webhook can read it
 [metadatas]
 token = "${ACCESS_TOKEN}"
 
@@ -75,12 +83,12 @@ token = "${ACCESS_TOKEN}"
 [[proxies]]
 name = "ha_web_${SUBDOMAIN}"
 type = "http"
-localIP = "127.0.0.1"  # Standard ApexOS internal IP in Supervisor
-localPort = 1702         # Standard ApexOS Port (1702)
+localIP = "127.0.0.1"   # Match the legacy SSH add-on target on host network
+localPort = 1702
 customDomains = ["${SUBDOMAIN}.cloud.apexinfosys.in"]
 TOML_EOF
 
-bashio::log.info "Configuration generated. Connecting to cloud..."
+echo "[ApexOS] Configuration generated. Connecting to cloud..."
 
 # 4. Start the FRP Client
 exec "$FRPC_BIN" -c "$FRPC_CONFIG"
