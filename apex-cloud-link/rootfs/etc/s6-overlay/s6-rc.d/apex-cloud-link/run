@@ -5,7 +5,7 @@ FRP_VERSION="0.56.0"
 FRP_SERVER_ADDR="cloud.apexinfosys.in"
 FRP_SERVER_PORT=7000
 CLOUD_API_URL="https://cloud.apexinfosys.in"
-APEX_LOCAL_API_BASE_URL="http://supervisor/core/api"
+HA_API_BASE_URL="http://supervisor/core/api"
 FRP_DIR="/data/frp"
 FRPC_BIN="${FRP_DIR}/frpc"
 FRPC_CONFIG="/tmp/frpc.toml"
@@ -27,21 +27,6 @@ GOOGLE_ENTITY_SYNC_PAGE_LIMIT=300
 GOOGLE_ENTITY_SYNC_BATCH_SIZE=120
 CLOUD_POST_STATUS=""
 CLOUD_POST_BODY=""
-
-ensure_supervisor_token() {
-    if [ -n "${SUPERVISOR_TOKEN:-}" ]; then
-        return 0
-    fi
-
-    local token=""
-    token=$(bashio::supervisor.token 2>/dev/null || true)
-    if [ -n "$token" ]; then
-        SUPERVISOR_TOKEN="$token"
-        return 0
-    fi
-
-    return 1
-}
 
 SUBDOMAIN=$(bashio::config 'subdomain')
 ACCESS_TOKEN=$(bashio::config 'access_token')
@@ -137,11 +122,11 @@ cloud_post_capture() {
 
 ha_api_get() {
     local endpoint="$1"
-    local url="${APEX_LOCAL_API_BASE_URL}${endpoint}"
+    local url="${HA_API_BASE_URL}${endpoint}"
 
-    if ! ensure_supervisor_token; then
+    if [ -z "${SUPERVISOR_TOKEN:-}" ]; then
         if [ "$GOOGLE_WARNED_NO_SUPERVISOR_TOKEN" -eq 0 ]; then
-            bashio::log.warning "Google sync unavailable: local ApexOS API token missing."
+            bashio::log.warning "Google sync disabled: SUPERVISOR_TOKEN unavailable. Ensure addon has hassio_api/homeassistant_api permissions."
             GOOGLE_WARNED_NO_SUPERVISOR_TOKEN=1
         fi
         return
@@ -156,11 +141,11 @@ ha_api_get() {
 ha_api_post() {
     local endpoint="$1"
     local payload="$2"
-    local url="${APEX_LOCAL_API_BASE_URL}${endpoint}"
+    local url="${HA_API_BASE_URL}${endpoint}"
 
-    if ! ensure_supervisor_token; then
+    if [ -z "${SUPERVISOR_TOKEN:-}" ]; then
         if [ "$GOOGLE_WARNED_NO_SUPERVISOR_TOKEN" -eq 0 ]; then
-            bashio::log.warning "Google command execution unavailable: local ApexOS API token missing."
+            bashio::log.warning "Google command execution disabled: SUPERVISOR_TOKEN unavailable."
             GOOGLE_WARNED_NO_SUPERVISOR_TOKEN=1
         fi
         return
@@ -182,7 +167,7 @@ sync_google_entities() {
     states_json=$(ha_api_get "/states")
     if [ -z "$states_json" ]; then
         if [ "$GOOGLE_WARNED_STATE_FETCH" -eq 0 ]; then
-            bashio::log.warning "Google entity sync skipped: unable to fetch ApexOS device states from local API"
+            bashio::log.warning "Google entity sync skipped: unable to fetch Home Assistant states from Supervisor API"
             GOOGLE_WARNED_STATE_FETCH=1
         fi
         return
@@ -221,77 +206,6 @@ sync_google_entities() {
                         else "switch"
                         end
                     ),
-                    capabilities: (
-                        if ($s.entity_id | startswith("light.")) then {
-                            supports: {on_off: true},
-                            light: {
-                                supports_brightness: (($s.attributes.brightness // null) != null),
-                                supported_color_modes: (($s.attributes.supported_color_modes // []) | map(tostring))
-                            }
-                        }
-                        elif ($s.entity_id | startswith("fan.")) then {
-                            supports: {on_off: true},
-                            fan: {
-                                supports_speed: (($s.attributes.percentage // null) != null),
-                                supports_percentage: (($s.attributes.percentage // null) != null),
-                                percentage_step: (($s.attributes.percentage_step | tonumber?) // 1),
-                                speed_min: 0,
-                                speed_max: 100
-                            }
-                        }
-                        elif ($s.entity_id | startswith("cover.")) then {
-                            cover: {
-                                supports_position: (($s.attributes.current_position // null) != null)
-                            }
-                        }
-                        elif ($s.entity_id | startswith("lock.")) then {
-                            lock: {
-                                supports_lock_unlock: true
-                            }
-                        }
-                        elif ($s.entity_id | startswith("climate.")) then {
-                            climate: {
-                                supports_mode: (($s.attributes.hvac_modes // []) | length) > 0,
-                                supports_setpoint: (($s.attributes.temperature // null) != null),
-                                hvac_modes: ($s.attributes.hvac_modes // []),
-                                temperature_unit: ($s.attributes.temperature_unit // "C")
-                            }
-                        }
-                        elif ($s.entity_id | startswith("media_player.")) then {
-                            supports: {on_off: true},
-                            media_player: {
-                                supports_volume: (($s.attributes.volume_level // null) != null),
-                                supports_mute: (($s.attributes.is_volume_muted // null) != null)
-                            }
-                        }
-                        elif ($s.entity_id | startswith("scene.")) then {
-                            scene: {
-                                supports_activate: true
-                            }
-                        }
-                        elif ($s.entity_id | startswith("button.")) then {
-                            button: {
-                                supports_press: true
-                            }
-                        }
-                        elif ($s.entity_id | startswith("vacuum.")) then {
-                            supports: {on_off: true},
-                            vacuum: {
-                                supports_start_stop: true,
-                                supports_pause: true
-                            }
-                        }
-                        elif ($s.entity_id | startswith("sensor.")) then {
-                            sensor: {
-                                supports_temperature: true,
-                                temperature_unit: ($s.attributes.unit_of_measurement // "C")
-                            }
-                        }
-                        else {
-                            supports: {on_off: true}
-                        }
-                        end
-                    ),
                     state: (
                         if ($s.entity_id | startswith("light.")) then {
                             on: ($s.state == "on"),
@@ -299,7 +213,7 @@ sync_google_entities() {
                         }
                         elif ($s.entity_id | startswith("fan.")) then {
                             on: ($s.state == "on"),
-                            speed_percent: ((($s.attributes.percentage | tonumber?) // 0) | floor)
+                            speed: (((($s.attributes.percentage | tonumber?) // 0) / 33.33) | ceil)
                         }
                         elif ($s.entity_id | startswith("cover.")) then {
                             openPercent: (($s.attributes.current_position | tonumber?) // 0)
@@ -345,7 +259,7 @@ sync_google_entities() {
     entities_count=$(printf '%s' "$entities_json" | jq -r 'length' 2>/dev/null || printf '0')
     if [ "$entities_count" -eq 0 ]; then
         if [ "$GOOGLE_WARNED_EMPTY_ENTITY_SYNC" -eq 0 ]; then
-            bashio::log.warning "Google entity sync produced zero entities. Check ApexOS states and local API access."
+            bashio::log.warning "Google entity sync produced zero entities. Check Home Assistant states and addon API permissions."
             GOOGLE_WARNED_EMPTY_ENTITY_SYNC=1
         fi
         return
@@ -444,10 +358,20 @@ execute_google_command() {
     elif [ "$action" = "set_fan_speed" ]; then
         local fan_speed
         local fan_percentage
-        fan_speed=$(printf '%s' "$payload_json" | jq -r '.speed_percent // .speed // "0"')
-        fan_percentage=$(printf '%s' "$fan_speed" | awk '{v=$1+0; if (v<0) v=0; if (v>100) v=100; print int(v)}')
+        fan_speed=$(printf '%s' "$payload_json" | jq -r '.speed // "1"')
+        case "$fan_speed" in
+            3|high|HIGH)
+                fan_percentage=100
+                ;;
+            2|medium|MEDIUM)
+                fan_percentage=66
+                ;;
+            *)
+                fan_percentage=33
+                ;;
+        esac
         ha_api_post "/services/fan/turn_on" "$(jq -n --arg entity_id "$entity_id" --argjson percentage "$fan_percentage" '{entity_id: $entity_id, percentage: $percentage}')" >/dev/null || success=false
-        resulting_state=$(jq -n --argjson speed_percent "$fan_percentage" '{on: true, speed_percent: $speed_percent}')
+        resulting_state=$(jq -n --arg speed "${fan_speed}" '{on: true, speed: ($speed|tonumber? // 1)}')
     elif [ "$action" = "set_open_percent" ]; then
         local open_percent
         open_percent=$(printf '%s' "$payload_json" | jq -r '.openPercent // 0')
