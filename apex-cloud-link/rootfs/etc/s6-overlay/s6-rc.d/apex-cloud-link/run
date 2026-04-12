@@ -175,23 +175,60 @@ sync_google_entities() {
 
     GOOGLE_WARNED_STATE_FETCH=0
 
-    # Fetch entity registry and device registry for real manufacturer/model/sw_version
-    local entity_registry_json device_registry_json device_info_map='{}' 
-    entity_registry_json=$(ha_api_get "/config/entity_registry" 2>/dev/null) || entity_registry_json=''
-    device_registry_json=$(ha_api_get "/config/device_registry" 2>/dev/null) || device_registry_json=''
+    # Fetch entity + device registries via WebSocket API for real manufacturer/model/sw_version
+    # (REST endpoints /api/config/entity_registry and /api/config/device_registry do not exist;
+    #  these are WebSocket-only APIs: config/entity_registry/list, config/device_registry/list)
+    local device_info_map='{}'
+    if [ -n "${SUPERVISOR_TOKEN:-}" ]; then
+        device_info_map=$(python3 -c "
+import json, os, sys
+try:
+    from websocket import create_connection
+    token = os.environ.get('SUPERVISOR_TOKEN', '')
+    ws = create_connection('ws://supervisor/core/websocket', timeout=15)
+    msg = json.loads(ws.recv())
+    if msg.get('type') == 'auth_required':
+        ws.send(json.dumps({'type': 'auth', 'access_token': token}))
+    msg = json.loads(ws.recv())
+    if msg.get('type') != 'auth_ok':
+        ws.close()
+        print('{}')
+        sys.exit(0)
+    # Fetch entity registry
+    ws.send(json.dumps({'id': 1, 'type': 'config/entity_registry/list'}))
+    ent_resp = json.loads(ws.recv())
+    # Fetch device registry
+    ws.send(json.dumps({'id': 2, 'type': 'config/device_registry/list'}))
+    dev_resp = json.loads(ws.recv())
+    ws.close()
+    entities = ent_resp.get('result', []) if ent_resp.get('success') else []
+    devices = dev_resp.get('result', []) if dev_resp.get('success') else []
+    # Build device_id -> {manufacturer, model, sw_version} lookup
+    dev_map = {}
+    for d in devices:
+        did = d.get('id', '')
+        if did:
+            dev_map[did] = {
+                'manufacturer': d.get('manufacturer') or None,
+                'model': d.get('model') or None,
+                'sw_version': d.get('sw_version') or None
+            }
+    # Build entity_id -> device info map
+    result = {}
+    for e in entities:
+        eid = e.get('entity_id', '')
+        did = e.get('device_id', '')
+        if eid and did and did in dev_map:
+            result[eid] = dev_map[did]
+    print(json.dumps(result))
+except Exception:
+    print('{}')
+" 2>/dev/null) || device_info_map='{}'
+    fi
 
-    if [ -n "$entity_registry_json" ] && [ -n "$device_registry_json" ]; then
-        # Build a map: entity_id -> {manufacturer, model, sw_version}
-        device_info_map=$(printf '%s\n%s' "$entity_registry_json" "$device_registry_json" | jq -sc '
-            (.[0] // []) as $entities
-            | (.[1] // []) as $devices
-            | ($devices | map({(.id // ""): {manufacturer: (.manufacturer // null), model: (.model // null), sw_version: (.sw_version // null)}}) | add // {}) as $dev_map
-            | reduce ($entities[] // empty) as $e ({}; 
-                if ($e.device_id // "") != "" and ($dev_map[$e.device_id] // null) != null then
-                    . + {($e.entity_id): $dev_map[$e.device_id]}
-                else . end
-            )
-        ' 2>/dev/null) || device_info_map='{}'
+    # Safety: ensure device_info_map is valid JSON object, never empty/malformed
+    if ! printf '%s' "$device_info_map" | jq -e 'type == "object"' >/dev/null 2>&1; then
+        device_info_map='{}'
     fi
 
     local entities_json='[]'
@@ -1309,7 +1346,14 @@ fi
 if [ "$FLEET_ACTIVE" -eq 1 ] && [ -n "$DEVICE_TOKEN" ]; then
     send_device_log "info" "device.start" "Cloud Link service starting" "$(jq -n --arg subdomain "$SUBDOMAIN" --arg frp_addr "$FRP_SERVER_ADDR" --arg frp_port "$FRP_SERVER_PORT" --arg ssh_remote_port "$SSH_REMOTE_PORT" '{subdomain: $subdomain, frp_addr: $frp_addr, frp_port: $frp_port, ssh_remote_port: $ssh_remote_port}')"
     send_heartbeat "starting"
+    # Initial entity sync with retry — HA Core may not be fully ready at addon start
     sync_google_entities
+    if [ "$GOOGLE_WARNED_EMPTY_ENTITY_SYNC" -eq 1 ]; then
+        bashio::log.info "Retrying initial entity sync in 5s..."
+        sleep 5
+        GOOGLE_WARNED_EMPTY_ENTITY_SYNC=0
+        sync_google_entities
+    fi
     sync_google_commands
     start_heartbeat_loop
     start_google_sync_loop
