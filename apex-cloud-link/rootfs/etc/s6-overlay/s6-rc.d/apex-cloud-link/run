@@ -249,7 +249,6 @@ except Exception:
                 then (
                     ((.attributes.device_class // "") | tostring) | test("^(doorbell)$")
                 )
-                )
                 else true
                 end
             ))
@@ -476,7 +475,7 @@ except Exception:
                     sw_version: (($devinfo[$s.entity_id].sw_version // null) | if . == "" then null else . end)
                 }
             )
-        ' 2>/dev/null || printf '[]')
+        ' 2>/tmp/google_entity_jq_err || { bashio::log.warning "Google entity jq pipeline failed: $(cat /tmp/google_entity_jq_err 2>/dev/null | head -1)"; printf '[]'; })
 
     local entities_count
     entities_count=$(printf '%s' "$entities_json" | jq -r 'length' 2>/dev/null || printf '0')
