@@ -11,7 +11,7 @@ arch:
   - i386
 boot: manual
 description: Scan for HDMI CEC devices
-image: homeassistant/{arch}-addon-cec_scan
+image: registry.apexinfosys.in/apexos/{arch}-addon-cec_scan
 options: {}
 schema: {}
 startup: once
