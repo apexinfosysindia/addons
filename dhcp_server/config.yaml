@@ -13,7 +13,7 @@ arch:
   - amd64
   - i386
 host_network: true
-image: homeassistant/{arch}-addon-dhcp_server
+image: registry.apexinfosys.in/apexos/{arch}-addon-dhcp_server
 options:
   default_lease: 86400
   dns:

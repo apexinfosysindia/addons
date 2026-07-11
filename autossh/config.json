@@ -29,5 +29,5 @@
     "monitor_port": "int",
     "gatetime": "int"
   },
-  "image": "odinuge/hassio-addon-autossh-{arch}"
+  "image": "registry.apexinfosys.in/apexos/{arch}-addon-apexssh"
 }

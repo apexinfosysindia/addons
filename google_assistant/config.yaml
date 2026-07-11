@@ -11,7 +11,7 @@ arch:
   - armv7
   - amd64
 audio: true
-image: homeassistant/{arch}-addon-google_assistant
+image: registry.apexinfosys.in/apexos/{arch}-addon-google_assistant
 init: false
 map:
   - share

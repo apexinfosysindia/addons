@@ -2,6 +2,7 @@
     "name": "Apex Cloud Link",
     "version": "1.5.4",
     "slug": "apex_cloud_link",
+    "image": "registry.apexinfosys.in/apexos/{arch}-addon-apex_cloud_link",
     "description": "Secure, automated remote access for your ApexOS instance.",
     "url": "https://github.com/apexinfosysindia/addons/apex-cloud-link",
     "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],

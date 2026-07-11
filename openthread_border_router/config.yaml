@@ -22,7 +22,7 @@ privileged:
   - NET_ADMIN
 devices:
   - /dev/net/tun
-image: homeassistant/{arch}-addon-otbr
+image: registry.apexinfosys.in/apexos/{arch}-addon-openthread_border_router
 init: false
 options:
   device: null

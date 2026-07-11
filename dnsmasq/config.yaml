@@ -11,7 +11,7 @@ arch:
   - aarch64
   - amd64
   - i386
-image: homeassistant/{arch}-addon-dnsmasq
+image: registry.apexinfosys.in/apexos/{arch}-addon-dnsmasq
 init: false
 options:
   defaults:

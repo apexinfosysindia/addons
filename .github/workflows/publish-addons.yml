@@ -1,0 +1,177 @@
+# =============================================================================
+# ApexOS add-on prebuilds — publish-addons (DRAFT, task #53 step 7).
+#
+# Builds every locally-buildable add-on in this repository and pushes
+# PREBUILT images to the ApexOS registry:
+#
+#   registry.apexinfosys.in/apexos/{arch}-addon-<slug>:<version>
+#
+# The matching `image:` keys in each add-on's config point the Supervisor at
+# these images — devices then PULL prebuilds from us instead of building
+# locally (or pulling upstream's homeassistant/* prebuilds).
+#
+# Conventions mirror the product repos' apexos-build.yml (docker-base):
+#   * amd64 (ubuntu-latest) + aarch64 (ubuntu-24.04-arm), native arch;
+#   * REGISTRY_USER / REGISTRY_PASSWORD org secrets (robot credential);
+#   * push on main only; PRs just prove the builds.
+# Differences (deliberate):
+#   * no denylist image-gate — add-on payloads are third-party upstream
+#     software (deCONZ, mosquitto, ...), not pipeline output; the gate's
+#     0-violation contract applies to OUR base/product images only;
+#   * an add-on leg auto-skips when the add-on doesn't support the arch or
+#     its build.yaml has no build_from for it.
+# =============================================================================
+name: publish-addons
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: publish-addons-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: registry.apexinfosys.in
+  REGISTRY_NS: registry.apexinfosys.in/apexos
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.addon }} (${{ matrix.arch.name }})
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ${{ matrix.arch.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - name: amd64
+            runner: ubuntu-latest
+          - name: aarch64
+            runner: ubuntu-24.04-arm
+        addon:
+          - apex-cloud-link
+          - autossh
+          - cec_scan
+          - configurator
+          - deconz
+          - dhcp_server
+          - dnsmasq
+          - google_assistant
+          - matter_server
+          - mosquitto
+          - openthread_border_router
+          - rpc_shutdown
+          - samba
+          - tellstick
+    env:
+      ADDON: ${{ matrix.addon }}
+      ARCH: ${{ matrix.arch.name }}
+    steps:
+      - name: checkout addons
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: read add-on metadata (config + build.yaml)
+        id: meta
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          import os
+          import pathlib
+
+          import yaml
+
+          addon = os.environ["ADDON"]
+          arch = os.environ["ARCH"]
+          root = pathlib.Path(".")
+
+          def load(p):
+              if p.suffix == ".json":
+                  return json.loads(p.read_text())
+              return yaml.safe_load(p.read_text())
+
+          cfg = None
+          for name in ("config.yaml", "config.json"):
+              p = root / addon / name
+              if p.is_file():
+                  cfg = load(p)
+                  break
+          assert cfg, f"no config for {addon}"
+
+          supported = arch in cfg.get("arch", [])
+
+          # build_from: add-on build.yaml, else the store root build.yaml
+          build_from = ""
+          args = {}
+          for p in (root / addon / "build.yaml", root / "build.yaml"):
+              if p.is_file():
+                  b = load(p) or {}
+                  bf = b.get("build_from") or {}
+                  if isinstance(bf, str):
+                      build_from = bf
+                  else:
+                      build_from = bf.get(arch, "")
+                  args = b.get("args") or {}
+                  break
+          if not build_from:
+              supported = False
+
+          print(f"supported={'true' if supported else 'false'}")
+          print(f"slug={cfg['slug']}")
+          print(f"version={cfg['version']}")
+          print(f"build_from={build_from}")
+          print("build_args=" + " ".join(f"{k}={v}" for k, v in args.items()))
+          PY
+
+      - name: build ${{ matrix.addon }} (${{ matrix.arch.name }})
+        if: steps.meta.outputs.supported == 'true'
+        env:
+          BUILD_FROM: ${{ steps.meta.outputs.build_from }}
+          BUILD_ARGS: ${{ steps.meta.outputs.build_args }}
+          VERSION: ${{ steps.meta.outputs.version }}
+          SLUG: ${{ steps.meta.outputs.slug }}
+        run: |
+          extra=()
+          for a in $BUILD_ARGS; do extra+=(--build-arg "$a"); done
+          docker buildx build --load "$ADDON" \
+            --build-arg "BUILD_FROM=$BUILD_FROM" \
+            --build-arg "BUILD_ARCH=$ARCH" \
+            --build-arg "BUILD_VERSION=$VERSION" \
+            "${extra[@]}" \
+            --label "io.apexos.arch=$ARCH" \
+            -t "$REGISTRY_NS/$ARCH-addon-$SLUG:$VERSION"
+
+      - name: push to registry (main only)
+        if: steps.meta.outputs.supported == 'true' && github.event_name != 'pull_request'
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+          SLUG: ${{ steps.meta.outputs.slug }}
+          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+        run: |
+          if [ -z "$REGISTRY_PASSWORD" ]; then
+            echo "::error::REGISTRY_PASSWORD not set"
+            exit 1
+          fi
+          echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY" -u "$REGISTRY_USER" --password-stdin
+          docker push "$REGISTRY_NS/$ARCH-addon-$SLUG:$VERSION"
+
+  addons-published:
+    name: addons-published
+    needs: build
+    if: always() && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: assert every supported add-on/arch built (and pushed on main)
+        env:
+          RESULT: ${{ needs.build.result }}
+        run: |
+          echo "build matrix result: $RESULT"
+          test "$RESULT" = "success"
