@@ -3,6 +3,6 @@ build_from:
   aarch64: ghcr.io/home-assistant-libs/python-matter-server:7.0.1
   amd64: ghcr.io/home-assistant-libs/python-matter-server:7.0.1
 args:
-  BASHIO_VERSION: 0.16.2
+  BASHIO_VERSION: 0.17.5
   TEMPIO_VERSION: 2024.11.2
   S6_OVERLAY_VERSION: 3.1.6.2
