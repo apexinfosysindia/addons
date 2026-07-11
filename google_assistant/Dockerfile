@@ -9,7 +9,14 @@ ARG REQUESTS_OAUTHLIB_VERSION
 ARG CHERRYPY_VERSION
 
 # Install packages
-RUN apt-get update \
+# Debian buster left deb.debian.org for archive.debian.org (EOL); archive
+# Release files are past their Valid-Until, and PyPA's rolling get-pip.py
+# dropped Python 3.7 — pin the 3.7 bootstrap.
+RUN sed -i \
+        -e "s|http://deb.debian.org/debian |http://archive.debian.org/debian |" \
+        -e "s|http://deb.debian.org/debian-security |http://archive.debian.org/debian-security |" \
+        /etc/apt/sources.list \
+    && apt-get -o Acquire::Check-Valid-Until=false update \
     && apt-get install -y --no-install-recommends \
         libportaudio2 \
         libasound2-plugins \
@@ -18,7 +25,7 @@ RUN apt-get update \
         python3-dev \
         build-essential \
     && curl --silent --show-error --retry 5 \
-        "https://bootstrap.pypa.io/get-pip.py" \
+        "https://bootstrap.pypa.io/pip/3.7/get-pip.py" \
         | python3 \
     && pip3 install --no-cache-dir \
         cherrypy=="${CHERRYPY_VERSION}" \
