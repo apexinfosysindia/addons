@@ -1,0 +1,22 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# ApexOS Add-on: Plex Media Server
+# Runs the Plex Media Server
+# ==============================================================================
+bashio::log.info 'Starting the Plex Media Server...'
+
+export LD_LIBRARY_PATH=/usr/lib/plexmediaserver
+export PLEX_MEDIA_SERVER_HOME=/usr/lib/plexmediaserver
+export PLEX_MEDIA_SERVER_MAX_PLUGIN_PROCS=6
+export PLEX_MEDIA_SERVER_INFO_DEVICE="ApexOS"
+export PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR=/data
+
+# Check if "/data/Plex Media Server/plexmediaserver.pid" exists, if so remove it
+if bashio::fs.file_exists '/data/Plex Media Server/plexmediaserver.pid'; then
+    bashio::log.debug 'Removing stale PID file...'
+    rm -f /data/Plex\ Media\ Server/plexmediaserver.pid
+fi
+
+# Run the Plex Media Server
+exec /usr/lib/plexmediaserver/Plex\ Media\ Server

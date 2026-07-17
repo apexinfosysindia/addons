@@ -1,0 +1,23 @@
+---
+version: 1.4.3
+slug: speech-to-phrase
+name: Speech-to-Phrase
+description: Fast and personalized local speech-to-text
+url: https://github.com/apexinfosysindia/addons/tree/main/speech_to_phrase
+arch:
+  - aarch64
+  - amd64
+init: false
+discovery:
+  - wyoming
+map:
+  - share:rw
+backup_exclude:
+  - "*/models/*"
+apexos_api: true
+options:
+  debug_logging: false
+schema:
+  debug_logging: bool
+ports:
+  "10300/tcp": null

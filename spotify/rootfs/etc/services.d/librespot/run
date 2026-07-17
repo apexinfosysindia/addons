@@ -1,0 +1,39 @@
+#!/command/with-contenv bashio
+# ==============================================================================
+# ApexOS Add-on: Spotify Connect
+# Runs librespot
+# ==============================================================================
+declare -a options
+declare bitrate
+declare name
+declare autoplay
+declare initial_volume
+
+bashio::log.info 'Starting librespot...'
+
+# Bitrate
+options+=(--bitrate $(bashio::config 'bitrate'))
+
+# Initial Volume
+initial_volume=$(bashio::config 'initial_volume')
+options+=(--initial-volume "$initial_volume")
+
+# Device name
+name=$(bashio::config 'name')
+options+=(--name "${name}")
+
+# Autoplay
+if bashio::config.true 'autoplay'; then
+  options+=(--autoplay on)
+fi
+
+# Save writes
+options+=(--disable-audio-cache)
+
+# Are we running in debug mode?
+if bashio::debug; then
+  options+=(--verbose)
+fi
+
+# Run librespot
+exec librespot "${options[@]}"

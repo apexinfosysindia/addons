@@ -1,0 +1,8 @@
+---
+build_from:
+  aarch64: registry.apexinfosys.in/apexos/matterjs-server:1.2.6
+  amd64: registry.apexinfosys.in/apexos/matterjs-server:1.2.6
+args:
+  BASHIO_VERSION: 0.17.5
+  TEMPIO_VERSION: 2024.11.2
+  S6_OVERLAY_VERSION: 3.1.6.2
