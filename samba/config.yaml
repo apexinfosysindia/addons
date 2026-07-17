@@ -9,6 +9,7 @@ arch:
   - amd64
 apexos_api: true
 host_network: true
+image: registry.apexinfosys.in/apexos/{arch}-addon-samba
 init: false
 map:
   - addons:rw
