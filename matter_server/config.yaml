@@ -2,6 +2,7 @@
 version: 9.1.0
 breaking_versions: [9.0.0]
 slug: matter_server
+image: registry.apexinfosys.in/apexos/{arch}-addon-matter_server
 name: Matter Server
 description: Matter WebSocket Server for ApexOS Matter support.
 url: https://github.com/apexinfosysindia/addons/tree/main/matter_server

@@ -1,6 +1,7 @@
 ---
 version: "4.0"
 slug: cec_scan
+image: registry.apexinfosys.in/apexos/{arch}-addon-cec_scan
 name: CEC Scanner
 url: https://github.com/apexinfosysindia/addons/tree/main/cec_scan
 arch:

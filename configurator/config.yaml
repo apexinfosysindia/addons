@@ -1,6 +1,7 @@
 ---
 version: 6.0.0
 slug: configurator
+image: registry.apexinfosys.in/apexos/{arch}-addon-configurator
 name: File editor
 description: Simple browser-based file editor for ApexOS
 url: https://github.com/apexinfosysindia/addons/tree/main/configurator

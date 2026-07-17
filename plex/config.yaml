@@ -1,6 +1,7 @@
 ---
 version: 4.1.0
 slug: plex
+image: registry.apexinfosys.in/apexos/{arch}-addon-plex
 name: Plex Media Server
 description: Recorded media, live TV, online news, and podcasts ready to stream.
 url: https://github.com/apexinfosysindia/addons/tree/main/plex

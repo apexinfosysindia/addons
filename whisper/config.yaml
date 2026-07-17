@@ -1,6 +1,7 @@
 ---
 version: 3.5.0
 slug: whisper
+image: registry.apexinfosys.in/apexos/{arch}-addon-whisper
 name: Whisper
 description: Speech-to-text with Whisper
 url: https://github.com/apexinfosysindia/addons/tree/main/whisper
