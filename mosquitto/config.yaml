@@ -1,6 +1,7 @@
 ---
 version: 7.1.0
 slug: mosquitto
+image: registry.apexinfosys.in/apexos/{arch}-addon-mosquitto
 name: Mosquitto broker
 description: An Open Source MQTT broker
 url: https://github.com/apexinfosysindia/addons/tree/main/mosquitto

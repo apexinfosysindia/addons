@@ -1,6 +1,7 @@
 ---
 version: 0.18.0
 slug: spotify
+image: registry.apexinfosys.in/apexos/{arch}-addon-spotify
 name: Spotify Connect
 description: Play Spotify music on your ApexOS device
 url: https://github.com/apexinfosysindia/addons/tree/main/spotify

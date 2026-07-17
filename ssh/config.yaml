@@ -1,6 +1,7 @@
 ---
 version: 10.3.0
 slug: ssh
+image: registry.apexinfosys.in/apexos/{arch}-addon-ssh
 name: Terminal & SSH
 description: Allow logging in remotely to ApexOS using SSH
 url: https://github.com/apexinfosysindia/addons/tree/main/ssh

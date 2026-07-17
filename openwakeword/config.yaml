@@ -1,6 +1,7 @@
 ---
 version: 2.1.0
 slug: openwakeword
+image: registry.apexinfosys.in/apexos/{arch}-addon-openwakeword
 name: openWakeWord
 description: openWakeWord using the Wyoming protocol
 url: https://github.com/apexinfosysindia/addons/tree/main/openwakeword

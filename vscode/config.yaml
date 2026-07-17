@@ -1,6 +1,7 @@
 ---
 version: 6.0.1
 slug: vscode
+image: registry.apexinfosys.in/apexos/{arch}-addon-vscode
 name: Studio Code Server
 description: Fully featured Visual Studio Code (VSCode) experience integrated in the ApexOS frontend.
 url: https://github.com/apexinfosysindia/addons/tree/main/vscode

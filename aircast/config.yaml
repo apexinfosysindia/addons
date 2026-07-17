@@ -1,6 +1,7 @@
 ---
 version: 5.1.1
 slug: aircast
+image: registry.apexinfosys.in/apexos/{arch}-addon-aircast
 name: AirCast
 description: AirPlay capabilities for your Chromecast devices.
 url: https://github.com/apexinfosysindia/addons/tree/main/aircast
