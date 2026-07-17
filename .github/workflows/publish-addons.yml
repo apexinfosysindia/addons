@@ -42,9 +42,33 @@ permissions:
   contents: read
 
 jobs:
+  # Third-party base images our add-ons build FROM are mirrored into the
+  # org registry first — CI and devices never depend on external registries
+  # at build/ship time (matter_server: ghcr.io/matter-js/matterjs-server).
+  # skopeo copy is idempotent; --all preserves the multi-arch manifest.
+  mirror-bases:
+    name: mirror third-party base images
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: mirror matterjs-server
+        env:
+          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+        run: |
+          if [ -z "$REGISTRY_PASSWORD" ]; then
+            echo "::warning::REGISTRY_PASSWORD not set — skipping base mirror"
+            exit 0
+          fi
+          skopeo copy --all \
+            --dest-creds "$REGISTRY_USER:$REGISTRY_PASSWORD" \
+            docker://ghcr.io/matter-js/matterjs-server:1.2.6 \
+            docker://$REGISTRY_NS/matterjs-server:1.2.6
+
   build:
     name: ${{ matrix.addon }} (${{ matrix.arch.name }})
     if: github.actor != 'dependabot[bot]'
+    needs: mirror-bases
     runs-on: ${{ matrix.arch.runner }}
     strategy:
       fail-fast: false
@@ -55,20 +79,24 @@ jobs:
           - name: aarch64
             runner: ubuntu-24.04-arm
         addon:
+          - aircast
           - apex-cloud-link
           - autossh
           - cec_scan
           - configurator
-          - deconz
-          - dhcp_server
-          - dnsmasq
-          - google_assistant
           - matter_server
           - mosquitto
           - openthread_border_router
-          - rpc_shutdown
+          - openwakeword
+          - piper
+          - plex
           - samba
-          - tellstick
+          - speech_to_phrase
+          - spotify
+          - ssh
+          - vscode
+          - whisper
+          - zigbee2mqtt
     env:
       ADDON: ${{ matrix.addon }}
       ARCH: ${{ matrix.arch.name }}

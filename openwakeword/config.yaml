@@ -1,0 +1,26 @@
+---
+version: 2.1.0
+slug: openwakeword
+name: openWakeWord
+description: openWakeWord using the Wyoming protocol
+url: https://github.com/apexinfosysindia/addons/tree/main/openwakeword
+arch:
+  - aarch64
+  - amd64
+init: false
+discovery:
+  - wyoming
+backup_exclude:
+  - "*.tflite"
+map:
+  - share:ro
+options:
+  threshold: 0.5
+  trigger_level: 1
+  debug_logging: false
+schema:
+  threshold: float
+  trigger_level: int
+  debug_logging: bool
+ports:
+  "10400/tcp": null
