@@ -9,8 +9,8 @@
     "startup": "application",
     "boot": "auto",
     "host_network": true,
-    "hassio_api": true,
-    "homeassistant_api": true,
+    "apexos_api": true,
+    "apexos_core_api": true,
     "init": false,
     "options": {
         "subdomain": "",
