@@ -35,7 +35,7 @@ Directory | Description
 App configuration:
 
 ```yaml
-username: homeassistant
+username: apexos
 password: YOUR_PASSWORD
 workgroup: WORKGROUP
 enabled_shares:
