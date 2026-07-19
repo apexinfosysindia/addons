@@ -13,7 +13,8 @@ RUN \
         py3-pip \
         python3 \
     && pip3 install \
-        hass-configurator=="${CONFIGURATOR_VERSION}" \
+        --extra-index-url https://wheels.apexinfosys.in/simple/ \
+        apexos-configurator=="${CONFIGURATOR_VERSION}" \
     \
     && find /usr/local \
         \( -type d -a -name test -o -name tests -o -name '__pycache__' \) \

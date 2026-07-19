@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.1.0
+
+- The editor now ships as ApexOS Configurator (`apexos-configurator`,
+  built from the org `configurator` repository): debranded UI, native
+  `APEX_*` settings keys and `AC_` environment prefix (legacy keys keep
+  working), core service calls fixed to the `apexos` service domain,
+  and base-URL joining no longer breaks on a slash-less API setting.
+
 ## 6.0.0
 
 - Initial ApexOS port of the File editor add-on (upstream 6.0.0).
