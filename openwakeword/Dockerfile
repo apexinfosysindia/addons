@@ -24,6 +24,14 @@ RUN \
         "wyoming[zeroconf]>=1.8,<2" \
         "wyoming-openwakeword @ https://github.com/rhasspy/wyoming-openwakeword/archive/refs/tags/v${WYOMING_OPENWAKEWORD_VERSION}.tar.gz" \
     \
+    # ApexOS: drop the upstream-assistant wake word model from the built-in
+    # set (train + ship our own via /share/openwakeword custom models).
+    # Guarded: the build FAILS if the file moves, so it can never silently
+    # ship again.
+    && model="$(find /usr -path '*/pyopen_wakeword/models/okay_nabu.tflite')" \
+    && test -n "$model" \
+    && rm "$model" \
+    \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /

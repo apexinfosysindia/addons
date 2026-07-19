@@ -1,5 +1,5 @@
 ---
-version: 2.1.0
+version: 2.1.1
 slug: openwakeword
 image: registry.apexinfosys.in/apexos/{arch}-addon-openwakeword
 name: openWakeWord
