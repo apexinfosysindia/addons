@@ -3,7 +3,7 @@
     "*.dash": "yaml",
     "**/esphome/*.yaml": "esphome",
     "**/esphome/**/*.yaml": "esphome",
-    "*.yaml": "home-assistant"
+    "*.yaml": "apexos"
   },
   "files.watcherExclude": {
     ".nfs**": true,
@@ -76,7 +76,7 @@
       "strings": true
     }
   },
-  "[home-assistant]": {
+  "[apexos]": {
     "editor.autoIndent": "full",
     "editor.insertSpaces": true,
     "editor.tabSize": 2,

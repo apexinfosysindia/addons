@@ -67,8 +67,15 @@ RUN \
     && ln -s /usr/local/lib/code-server/bin/code-server /usr/local/bin/code-server \
     \
     && mkdir -p /root/.code-server/extensions \
+    # ApexOS Config Helper installs from the org release asset, not the
+    # marketplace (own fork; the loop below skips its line)
+    && curl -JL --retry 5 -o /tmp/apexos.apexos-config-helper-2.2.0.vsix \
+        "https://github.com/apexinfosysindia/config-helper/releases/download/v2.2.0-apexos.1/apexos-config-helper-2.2.0.vsix" \
+    && mkdir -p /usr/local/lib/code-server/lib/vscode/extensions/apexos.apexos-config-helper-2.2.0 \
+    && bsdtar --strip-components=1 -xf /tmp/apexos.apexos-config-helper-2.2.0.vsix \
+        -C /usr/local/lib/code-server/lib/vscode/extensions/apexos.apexos-config-helper-2.2.0 extension \
     && uuid=$(uuidgen) \
-    && while read -r ext; do \
+    && grep -v "^apexos.apexos-config-helper#" /root/vscode.extensions | while read -r ext; do \
         extention="${ext%%#*}" \
         vendor="${extention%%.*}"; \
         slug="${extention#*.}"; \
@@ -86,7 +93,7 @@ RUN \
                     -C "/usr/local/lib/code-server/lib/vscode/extensions/${extention}-${version}" extension; \
         [ $? -ne 0 ] && exit 1; \
         sleep 1; \
-    done < /root/vscode.extensions \
+    done \
     && ls -la /usr/local/lib/code-server/lib/vscode/extensions/ \
     \
     && curl -L -s -o /usr/bin/apex \

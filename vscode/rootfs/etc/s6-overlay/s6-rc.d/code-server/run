@@ -26,8 +26,8 @@ options+=(--auth none)
 
 # Export env variables expected by the third-party
 # keesschollaart.vscode-home-assistant extension (its API surface)
-export HASS_SERVER="http://supervisor/core"
-export HASS_TOKEN="${SUPERVISOR_TOKEN:-}"
+export APEX_SERVER="http://supervisor/core"
+export APEX_TOKEN="${SUPERVISOR_TOKEN:-}"
 
 # Run the code server
 cd "${config_path}" || bashio::exit.nok "Could not change working directory"
