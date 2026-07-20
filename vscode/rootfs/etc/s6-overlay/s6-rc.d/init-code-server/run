@@ -8,6 +8,7 @@ declare config_path
 
 # List of previous config hashes, to allow upgrade "default" configs.
 readonly -a PREVIOUS_DEFAULT_CONFIG_HASHES=(
+    4af003224345302a7f04cf40703554da5a1d8baba512dcb16cf50147f33cf06199f9ef1ddde5a2ecbc5e923ca02d1316ae62588aa9fc439a6cd994576a2b019d
     86776df88391c3d94f79f62b430f9ff8538960628d5e04fb660165a5a46640d2e74f89cd68b3e6985dc59101ae2dda00a1e25aa48381acfd4736858c5f23878b
     2be4c50575c05711d30121c3a1320698d3dbb034523c481be3aad3b638af3e0a46113d8c3f8cfc1b0f01e4cc10f32da3a30feca161c31b5b27177aeb7231bf70
     d4745002643a0168f65bc5b465a9baff59af0fb4783b50553e1a4e8b3f1a569fc4905df19b7743f7f313a5809a5128d997fc4b5e0a0e5db0a01f47b3b7bec39d
@@ -50,6 +51,11 @@ while read -r ext; do
     # shellcheck disable=SC2086
     rm -f -r /data/vscode/extensions/${extension,,}*
 done < /root/vscode.extensions
+
+# Transition (6.1.0): purge persisted copies of the pre-fork editor
+# extension id — its line left vscode.extensions, so the loop above no
+# longer cleans it. Drop this after one release cycle.
+rm -f -r /data/vscode/extensions/keesschollaart.vscode-home-assistant*
 
 # Ensure user extensions folder exists
 mkdir -p /data/vscode/extensions
