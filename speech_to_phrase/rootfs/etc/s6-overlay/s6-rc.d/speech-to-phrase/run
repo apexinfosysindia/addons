@@ -7,16 +7,16 @@ cd /usr/src || exit 1
 
 flags=()
 
-if bashio::config.has_value 'hass_websocket_uri'; then
-   hass_websocket_uri="$(bashio::config 'hass_websocket_uri')"
+if bashio::config.has_value 'apex_websocket_uri'; then
+   apex_websocket_uri="$(bashio::config 'apex_websocket_uri')"
 else
-   hass_websocket_uri='ws://supervisor/core/websocket'
+   apex_websocket_uri='ws://supervisor/core/websocket'
 fi
 
-if bashio::config.has_value 'hass_token'; then
-   hass_token="$(bashio::config 'hass_token')"
+if bashio::config.has_value 'apex_token'; then
+   apex_token="$(bashio::config 'apex_token')"
 else
-   hass_token="${SUPERVISOR_TOKEN}"
+   apex_token="${SUPERVISOR_TOKEN}"
 fi
 
 if bashio::config.true 'debug_logging'; then
@@ -36,5 +36,5 @@ exec .venv/bin/python3 -m speech_to_phrase \
     --retrain-on-connect \
     --retrain-seconds 300 \
     --custom-sentences-dir /share/speech-to-phrase/custom_sentences \
-    --hass-token "${hass_token}" \
-    --hass-websocket-uri "${hass_websocket_uri}" ${flags[@]}
+    --apex-token "${apex_token}" \
+    --apex-websocket-uri "${apex_websocket_uri}" ${flags[@]}
