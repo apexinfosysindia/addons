@@ -1,5 +1,5 @@
 ---
-version: 2.12.1-1
+version: 2.12.1-2
 slug: zigbee2mqtt
 image: registry.apexinfosys.in/apexos/{arch}-addon-zigbee2mqtt
 name: Zigbee2MQTT

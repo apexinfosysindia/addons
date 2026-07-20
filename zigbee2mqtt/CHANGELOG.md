@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.12.1-2
+
+- Debrand user-visible upstream-core strings at image build time
+  (`debrand/transform.mjs`): settings-schema titles/descriptions (these drive
+  the frontend settings page), backend log/error strings, and both served
+  frontend bundles including the onboarding page (precompressed `.br`
+  variants are regenerated).
+- Settings-schema placeholder default/examples for the discovery topics now
+  show the ApexOS core prefix (`apexos` / `apexos/status`), matching the values
+  the app already pins at startup.
+- No wire-protocol changes: the application's settings keys, its
+  MQTT-discovery topics and payload keys are untouched.
+
 ## 2.12.1-1
 
 - Initial ApexOS port of the Zigbee2MQTT add-on (upstream 2.12.1-1, Zigbee2MQTT 2.12.1).
