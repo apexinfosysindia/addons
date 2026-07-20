@@ -30,6 +30,7 @@ RUN \
         tar -C ./tools -xzf - \
     && python3 -m venv .venv \
     && .venv/bin/pip3 install --no-cache-dir \
+        --extra-index-url https://wheels.apexinfosys.in/simple/ \
         "speech-to-phrase @ https://github.com/apexinfosysindia/speech-to-phrase/archive/refs/tags/v${SPEECH_TO_PHRASE_VERSION}.tar.gz" \
     && apt-get remove --yes build-essential \
     && apt-get autoclean \
