@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.5
+
+- Source refresh (1.4.3-apexos.2): docs/test housekeeping and the
+  dev/test grammar dependency now comes from the org intents package.
+
 ## 1.4.4
 
 - Now built from the org `speech-to-phrase` repository (1.4.3-apexos.1):

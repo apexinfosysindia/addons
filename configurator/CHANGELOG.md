@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.1.1
+
+- App 0.6.1: the fallback API base URL and the docs/examples now use the
+  native web port (1702) — the shipped default still pointed at the
+  pre-flip port.
+
 ## 6.1.0
 
 - The editor now ships as ApexOS Configurator (`apexos-configurator`,

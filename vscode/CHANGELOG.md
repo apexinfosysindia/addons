@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.1.1
+
+- ApexOS Config Helper 2.2.1: connect prompts, URL validation messages
+  and schema hover examples now show the native web port (1702).
+
 ## 6.1.0
 
 - The YAML editing extension is now ApexOS Config Helper (built from the
