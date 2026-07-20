@@ -42,6 +42,18 @@ COPY --from=dependencies_and_build /app/node_modules ./node_modules
 COPY --from=dependencies_and_build /app/dist ./dist
 COPY --from=dependencies_and_build /app/package.json /app/LICENSE /app/index.js ./
 
+# ApexOS display-string transform: rewrites user-visible upstream-brand strings
+# in the built backend (log/error strings, settings-schema titles/descriptions
+# that drive the frontend settings UI) and in the served frontend bundles
+# (incl. regenerating the precompressed .br variants). Wire protocol is not
+# touched: settings keys, MQTT discovery topics and payload keys stay as-is
+# (see rootfs/docker-entrypoint.sh for the pinned discovery topic values).
+# The script fails the build if it makes zero replacements in an expected
+# target or if any display form survives, so an upstream layout change
+# surfaces at build time instead of shipping half-branded.
+COPY debrand /usr/src/debrand
+RUN node /usr/src/debrand/transform.mjs /app && rm -rf /usr/src/debrand
+
 ENV NODE_ENV production
 
 HEALTHCHECK --interval=1m --timeout=3s --start-period=30s --start-interval=3s \
