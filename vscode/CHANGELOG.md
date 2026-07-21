@@ -1,5 +1,14 @@
 # Changelog
 
+## 6.1.2
+
+- ApexOS Config Helper 2.2.3: language client now uses
+  `@apexinfosysindia/js-websocket` 9.6.3, and the legacy compatibility
+  bridge (pre-fork environment fallbacks, settings section, secret
+  migration) has been removed. The add-on already provides the native
+  `APEX_SERVER`/`APEX_TOKEN` environment, so no configuration change is
+  needed.
+
 ## 6.1.1
 
 - ApexOS Config Helper 2.2.1: connect prompts, URL validation messages
