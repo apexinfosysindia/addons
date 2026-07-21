@@ -8,7 +8,7 @@
 #
 # The matching `image:` keys in each add-on's config point the Supervisor at
 # these images — devices then PULL prebuilds from us instead of building
-# locally (or pulling upstream's homeassistant/* prebuilds).
+# locally (or pulling the upstream org's prebuilds).
 #
 # Conventions mirror the product repos' apexos-build.yml (docker-base):
 #   * amd64 (ubuntu-latest) + aarch64 (ubuntu-24.04-arm), native arch;

@@ -24,8 +24,8 @@ options+=(--disable-update-check)
 # Disable code authentication, we use ApexOS authentication
 options+=(--auth none)
 
-# Export env variables expected by the third-party
-# keesschollaart.vscode-home-assistant extension (its API surface)
+# Export env variables expected by the bundled ApexOS config-helper
+# extension (its API surface)
 export APEX_SERVER="http://supervisor/core"
 export APEX_TOKEN="${SUPERVISOR_TOKEN:-}"
 
