@@ -1,5 +1,5 @@
 ---
-version: 6.1.1
+version: "6.1.2"
 slug: configurator
 image: registry.apexinfosys.in/apexos/{arch}-addon-configurator
 name: File editor
@@ -9,6 +9,7 @@ arch:
   - aarch64
   - amd64
 apexos_api: true
+apexos_core_api: true
 ingress: true
 init: false
 map:

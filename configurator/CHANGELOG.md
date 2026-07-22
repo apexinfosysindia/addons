@@ -1,3 +1,9 @@
+## 6.1.2
+
+- Restore the core API grant lost in the porting wave (fixes the
+  repeating "Not permitted API access" warning and entity
+  autocomplete in the editor).
+
 # Changelog
 
 ## 6.1.1
