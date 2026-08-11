@@ -45,7 +45,15 @@ jobs:
   # Third-party base images our add-ons build FROM are mirrored into the
   # org registry first — CI and devices never depend on external registries
   # at build/ship time (matter_server: ghcr.io/matter-js/matterjs-server).
-  # skopeo copy is idempotent; --all preserves the multi-arch manifest.
+  #
+  # `docker buildx imagetools create`, NOT skopeo: skopeo only ever existed
+  # here because the job used to run on a GitHub-hosted ubuntu image, which
+  # preinstalls it. The self-hosted builders don't have it (exit 127,
+  # "skopeo: command not found"), and installing it would mean mutating the
+  # builder hosts. imagetools is the buildx-native equivalent — it copies the
+  # whole manifest list registry-to-registry without pulling layers, so it is
+  # both the `--all` equivalent and cheaper. Idempotent: re-tagging the same
+  # digest is a no-op.
   mirror-bases:
     name: mirror third-party base images
     if: github.actor != 'dependabot[bot]'
@@ -60,10 +68,10 @@ jobs:
             echo "::warning::REGISTRY_PASSWORD not set — skipping base mirror"
             exit 0
           fi
-          skopeo copy --all \
-            --dest-creds "$REGISTRY_USER:$REGISTRY_PASSWORD" \
-            docker://ghcr.io/matter-js/matterjs-server:1.2.6 \
-            docker://$REGISTRY_NS/matterjs-server:1.2.6
+          echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY" -u "$REGISTRY_USER" --password-stdin
+          docker buildx imagetools create \
+            --tag "$REGISTRY_NS/matterjs-server:1.2.6" \
+            ghcr.io/matter-js/matterjs-server:1.2.6
 
   build:
     name: ${{ matrix.addon }} (${{ matrix.arch.name }})
@@ -106,10 +114,51 @@ jobs:
         with:
           persist-credentials: false
 
+      # The metadata step below needs PyYAML. Plain `python3` is NOT enough:
+      # on the ARM64 builder /usr/bin/python3 is 3.9.6 with no yaml at all,
+      # so every aarch64 leg would die on `import yaml`. And no
+      # actions/setup-python — on that (macOS) builder its fallback installer
+      # resolves the tool cache from the hosted-image path
+      # /Users/runner/hostedtoolcache and dies on
+      # `mkdir: /Users/runner: Permission denied`.
+      #
+      # Probe the runner's own interpreters for one that can already import
+      # yaml, and expose it as an unversioned `python`. The Linux builder
+      # ships python3.12 WITH PyYAML but WITHOUT pip and WITHOUT ensurepip,
+      # so venv/pip recovery is only a last resort there.
+      - name: provision python + yaml (runner-native interpreter)
+        run: |
+          set -eu
+          py=""
+          cand=""
+          for c in python3.12 python3.13 python3.11 python3 python; do
+            p=$(command -v "$c" 2>/dev/null) || continue
+            if [ -z "$cand" ]; then cand="$p"; fi
+            if "$p" -c 'import yaml' 2>/dev/null; then py="$p"; break; fi
+          done
+          if [ -z "$py" ]; then
+            if [ -z "$cand" ]; then echo "no python3 on this runner" >&2; exit 1; fi
+            py="$cand"
+            venv="$RUNNER_TEMP/addonvenv"
+            if "$py" -m venv "$venv" 2>/dev/null && "$venv/bin/python" -m pip --version >/dev/null 2>&1; then
+              "$venv/bin/python" -m pip install -q --disable-pip-version-check pyyaml
+              py="$venv/bin/python"
+            elif "$py" -m pip install -q --user --break-system-packages pyyaml 2>/dev/null; then
+              :
+            else
+              "$py" -m pip install -q --user pyyaml
+            fi
+          fi
+          "$py" -c 'import sys, yaml; print(sys.version, "pyyaml", yaml.__version__)'
+          shim="$RUNNER_TEMP/pyshim"
+          mkdir -p "$shim"
+          ln -sf "$py" "$shim/python"
+          echo "$shim" >> "$GITHUB_PATH"
+
       - name: read add-on metadata (config + build.yaml)
         id: meta
         run: |
-          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          python - <<'PY' >> "$GITHUB_OUTPUT"
           import json
           import os
           import pathlib
