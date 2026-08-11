@@ -11,7 +11,7 @@
 # locally (or pulling the upstream org's prebuilds).
 #
 # Conventions mirror the product repos' apexos-build.yml (docker-base):
-#   * amd64 (ubuntu-latest) + aarch64 (ubuntu-24.04-arm), native arch;
+#   * amd64 (self-hosted) + aarch64 (self-hosted (ARM64)), native arch;
 #   * REGISTRY_USER / REGISTRY_PASSWORD org secrets (robot credential);
 #   * push on main only; PRs just prove the builds.
 # Differences (deliberate):
@@ -49,7 +49,7 @@ jobs:
   mirror-bases:
     name: mirror third-party base images
     if: github.actor != 'dependabot[bot]'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, apexos-builder]
     steps:
       - name: mirror matterjs-server
         env:
@@ -75,9 +75,9 @@ jobs:
       matrix:
         arch:
           - name: amd64
-            runner: ubuntu-latest
+            runner: [self-hosted, apexos-builder, linux, X64]
           - name: aarch64
-            runner: ubuntu-24.04-arm
+            runner: [self-hosted, apexos-builder, ARM64]
         addon:
           - aircast
           - apex-cloud-link
@@ -195,7 +195,7 @@ jobs:
     name: addons-published
     needs: build
     if: always() && github.actor != 'dependabot[bot]'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, apexos-builder]
     steps:
       - name: assert every supported add-on/arch built (and pushed on main)
         env:
