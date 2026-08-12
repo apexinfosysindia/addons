@@ -57,7 +57,14 @@ jobs:
   mirror-bases:
     name: mirror third-party base images
     if: github.actor != 'dependabot[bot]'
-    runs-on: [self-hosted, apexos-builder]
+    # Linux builder ONLY. The 'apexos-builder' label is on BOTH self-hosted
+    # runners, so a bare [self-hosted, apexos-builder] label set is a coin flip
+    # between the Ubuntu box and the macOS workstation. This job is not pure
+    # shell -- it runs 'docker buildx imagetools create' against the registry,
+    # and only the Linux builder is provisioned for it. Whichever runner
+    # happened to pick the job decided whether the multi-arch manifest was
+    # published at all.
+    runs-on: [self-hosted, apexos-builder, linux, X64]
     permissions:
       contents: read
       packages: read # refresh the shared runner's ghcr credential (below)
