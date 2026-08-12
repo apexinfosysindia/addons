@@ -58,7 +58,25 @@ jobs:
     name: mirror third-party base images
     if: github.actor != 'dependabot[bot]'
     runs-on: [self-hosted, apexos-builder]
+    permissions:
+      contents: read
+      packages: read # refresh the shared runner's ghcr credential (below)
     steps:
+      # imagetools reads the SOURCE ref from ghcr.io. That image is public and
+      # needs no credential at all, but on a self-hosted runner
+      # ~/.docker/config.json is SHARED by every job of every repo, and a
+      # GITHUB_TOKEN dies with the job that minted it. A leftover ghcr entry
+      # therefore makes the read present an EXPIRED credential, and ghcr
+      # answers 403 rather than falling back to anonymous (proven live: run
+      # 31544148412 — `failed to fetch oauth token: ... 403 Forbidden` on
+      # `scope=repository:matter-js/matterjs-server:pull`). The login in the
+      # step below is for OUR registry and never touches the ghcr entry.
+      # Hosted runners never showed this: each job got a fresh VM.
+      - name: refresh ghcr credential
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
       - name: mirror matterjs-server
         env:
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -78,6 +96,9 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: mirror-bases
     runs-on: ${{ matrix.arch.runner }}
+    permissions:
+      contents: read
+      packages: read # the add-on bases are ghcr.io/apexinfosysindia/*
     strategy:
       fail-fast: false
       matrix:
@@ -126,6 +147,27 @@ jobs:
       # yaml, and expose it as an unversioned `python`. The Linux builder
       # ships python3.12 WITH PyYAML but WITHOUT pip and WITHOUT ensurepip,
       # so venv/pip recovery is only a last resort there.
+      # Every base this repo builds FROM lives behind a credential: most
+      # add-ons use ghcr.io/apexinfosysindia/{base,base-debian,addon-base},
+      # matter_server uses the mirror in our own registry. See the note on
+      # mirror-bases for why the ghcr entry in the SHARED docker config has to
+      # be overwritten per job rather than trusted -- an expired entry there
+      # turns an otherwise anonymous pull into a 403. The registry login is
+      # advisory: `push to registry` logs in again on main, and an add-on whose
+      # base is not behind the org registry builds fine without it.
+      - name: refresh base-image credentials (ghcr + org registry)
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          if [ -n "$REGISTRY_PASSWORD" ]; then
+            echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY" -u "$REGISTRY_USER" --password-stdin
+          else
+            echo "::warning::REGISTRY_PASSWORD not set — bases hosted in the org registry will not resolve"
+          fi
+
       - name: provision python + yaml (runner-native interpreter)
         run: |
           set -eu
