@@ -158,6 +158,37 @@ jobs:
       ADDON: ${{ matrix.addon }}
       ARCH: ${{ matrix.arch.name }}
     steps:
+      # The self-hosted builders share ONE disk across every job of every repo,
+      # and this workflow is the heaviest thing on it: 36 add-on images, several
+      # of which pip-install torch. On 2026-08-12 the amd64 builder reached zero
+      # bytes free and ten add-on builds died with errno 28 ("No space left on
+      # device") mid pip-install, alongside core's apexos-build. Hosted runners
+      # never showed this because every job got a fresh disk.
+      #
+      # Trim only when the disk is actually tight, so a warm cache survives the
+      # common case. `df -Pk` because the ARM64 builder is macOS, where df has
+      # neither -BG nor --output.
+      - name: reclaim disk when the shared builder is low
+        run: |
+          free_gb=$(df -Pk . | awk 'NR==2 {print int($4 / 1048576)}')
+          echo "free before: $free_gb GiB"
+          docker system df || true
+          if [ "$free_gb" -lt 20 ]; then
+            docker image prune -f || true
+            docker buildx prune -f --keep-storage=10GB \
+              || docker builder prune -f --keep-storage=10GB || true
+            # Tagged build products pile up too (every leg tags and pushes an
+            # image), and dangling-only pruning never touches them. Sweep the
+            # unused ones older than a week -- on the LINUX builder only: the
+            # ARM64 builder is a workstation with its own images and stopped
+            # containers, and `prune -a` there would sweep things this pipeline
+            # does not own.
+            if [ "$(uname)" = "Linux" ]; then
+              docker image prune -a -f --filter until=168h || true
+            fi
+            df -Ph .
+          fi
+
       - name: checkout addons
         uses: actions/checkout@v4
         with:
