@@ -56,8 +56,25 @@ jobs:
   # digest is a no-op.
   mirror-bases:
     name: mirror third-party base images
-    if: github.actor != 'dependabot[bot]'
-    runs-on: [self-hosted, apexos-builder]
+    # main only. This job WRITES to the production registry, and every other
+    # registry-writing job in the fleet (docker-base / addon-base `merge`,
+    # every apexos-build.yml push step) is already gated the same way — this
+    # one was the single outlier, so any pull request, from any branch, could
+    # overwrite a shipped base tag. It also put a registry round-trip on the
+    # critical path of every PR: the job `needs`-blocks all 36 build legs, so
+    # while the builders are busy it just queues, and run 31578046462 sat
+    # unassigned for 4m40s and died as `cancelled` — a red check on a PR that
+    # changed nothing this job touches. Mirroring is idempotent and the tag
+    # the add-on builds FROM is already published, so PRs lose no coverage.
+    if: github.event_name != 'pull_request' && github.actor != 'dependabot[bot]'
+    # Linux builder ONLY. The `apexos-builder` label is on BOTH self-hosted
+    # runners, so a bare [self-hosted, apexos-builder] label set is a coin
+    # flip between the Ubuntu box and the macOS workstation. This job is not
+    # pure shell — it runs `docker buildx imagetools create` against the
+    # registry, and only the Linux builder is provisioned for that — so which
+    # runner happened to pick the job decided whether the mirror was
+    # published at all. Same class as the fleet-wide template pins.
+    runs-on: [self-hosted, apexos-builder, linux, X64]
     permissions:
       contents: read
       packages: read # refresh the shared runner's ghcr credential (below)
@@ -82,9 +99,14 @@ jobs:
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
         run: |
+          # Hard failure, not a warning-and-skip. matter_server's build.yaml
+          # resolves build_from to $REGISTRY_NS/matterjs-server, so a silent
+          # skip here leaves the job green while nothing is mirrored, and the
+          # miss only surfaces later as an unresolvable base. Matches the
+          # `push to registry` step below.
           if [ -z "$REGISTRY_PASSWORD" ]; then
-            echo "::warning::REGISTRY_PASSWORD not set — skipping base mirror"
-            exit 0
+            echo "::error::REGISTRY_PASSWORD not set — cannot mirror the base image"
+            exit 1
           fi
           echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY" -u "$REGISTRY_USER" --password-stdin
           docker buildx imagetools create \
@@ -93,8 +115,14 @@ jobs:
 
   build:
     name: ${{ matrix.addon }} (${{ matrix.arch.name }})
-    if: github.actor != 'dependabot[bot]'
     needs: mirror-bases
+    # mirror-bases is main-only now, so on a pull request it is SKIPPED — and
+    # a skipped `needs` skips its dependents unless the condition tolerates
+    # it, which would silently stop PRs from proving the builds at all. Keep
+    # the real gate: never build on top of a mirror that actually FAILED.
+    if: >-
+      !cancelled() && needs.mirror-bases.result != 'failure'
+      && github.actor != 'dependabot[bot]'
     runs-on: ${{ matrix.arch.runner }}
     permissions:
       contents: read
