@@ -113,6 +113,22 @@ jobs:
             --tag "$REGISTRY_NS/matterjs-server:1.2.6" \
             ghcr.io/matter-js/matterjs-server:1.2.6
 
+      # The other half of the `refresh ghcr credential` step above. That step
+      # exists because a previous job left an expired ghcr entry in this shared
+      # home and the read then failed 403 instead of going anonymous; refreshing
+      # fixes the symptom for THIS job while handing the same expired entry to
+      # the next one. Removing it here is what ends the cycle. Matches the step
+      # of the same name in every apexos-build.yml.
+      #
+      # always() so a failed mirror does not skip the cleanup, and never fail the
+      # job on it: `docker logout` already exits 0 for a registry that was never
+      # logged into, so a nonzero here would only mask the real result.
+      - name: drop the registry credentials from the shared runner home
+        if: always()
+        run: |
+          docker logout ghcr.io || true
+          docker logout "$REGISTRY" || true
+
   build:
     name: ${{ matrix.addon }} (${{ matrix.arch.name }})
     needs: mirror-bases
@@ -340,6 +356,18 @@ jobs:
           fi
           echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY" -u "$REGISTRY_USER" --password-stdin
           docker push "$REGISTRY_NS/$ARCH-addon-$SLUG:$VERSION"
+
+      # See the identical step in `mirror-bases` above. This job matters more for
+      # it: its aarch64 leg runs on the macOS builder, which is also the OS image
+      # builder and the iOS CI runner, so the credential it leaves behind is
+      # offered to a much wider set of unrelated jobs. Unconditional, unlike the
+      # push step, because the login on a PR run happens in the base-image
+      # refresh step, which is not gated on `main`.
+      - name: drop the registry credentials from the shared runner home
+        if: always()
+        run: |
+          docker logout ghcr.io || true
+          docker logout "$REGISTRY" || true
 
   addons-published:
     name: addons-published
