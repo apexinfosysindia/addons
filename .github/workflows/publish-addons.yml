@@ -74,7 +74,7 @@ jobs:
     # registry, and only the Linux builder is provisioned for that — so which
     # runner happened to pick the job decided whether the mirror was
     # published at all. Same class as the fleet-wide template pins.
-    runs-on: [self-hosted, apexos-builder, linux, X64]
+    runs-on: ${{ fromJSON(vars.APEXOS_RUNSON_AMD64 || '["self-hosted","apexos-builder","linux","X64"]') }}
     permissions:
       contents: read
       packages: read # refresh the shared runner's ghcr credential (below)
@@ -148,9 +148,9 @@ jobs:
       matrix:
         arch:
           - name: amd64
-            runner: [self-hosted, apexos-builder, linux, X64]
+            runner: ${{ fromJSON(vars.APEXOS_RUNSON_AMD64 || '["self-hosted","apexos-builder","linux","X64"]') }}
           - name: aarch64
-            runner: [self-hosted, apexos-builder, ARM64]
+            runner: ${{ fromJSON(vars.APEXOS_RUNSON_AARCH64 || '["self-hosted","apexos-builder","ARM64"]') }}
         addon:
           - aircast
           - apex-cloud-link
@@ -373,7 +373,7 @@ jobs:
     name: addons-published
     needs: build
     if: always() && github.actor != 'dependabot[bot]'
-    runs-on: [self-hosted, apexos-builder, linux, X64]
+    runs-on: ${{ fromJSON(vars.APEXOS_RUNSON_AMD64 || '["self-hosted","apexos-builder","linux","X64"]') }}
     steps:
       - name: assert every supported add-on/arch built (and pushed on main)
         env:
