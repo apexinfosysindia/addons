@@ -2,19 +2,28 @@
   "name": "Apex MCU+ SSH Tunnel",
   "version": "0.3.0",
   "slug": "apexssh",
-  "arch": ["armv7", "armhf", "amd64", "aarch64", "i386"],
+  "arch": [
+    "amd64",
+    "aarch64"
+  ],
   "description": "Connects over Apex MCU+ Cloud through secure SSH Tunnel",
   "url": "https://github.com/apexinfosysindia/addons/autossh",
   "startup": "application",
   "boot": "auto",
   "host_network": true,
-  "map": ["config:rw"],
+  "map": [
+    "config:rw"
+  ],
   "options": {
     "hostname": "user.cloud.apexinfosys.in",
     "ssh_port": "22",
     "username": "APEX ID",
-    "remote_forwarding": ["4440:localhost:1702"],
-    "local_forwarding": [""],
+    "remote_forwarding": [
+      "4440:localhost:1702"
+    ],
+    "local_forwarding": [
+      ""
+    ],
     "other_ssh_options": "-v",
     "monitor_port": "4440",
     "gatetime": "30"
@@ -23,8 +32,12 @@
     "hostname": "str",
     "ssh_port": "int",
     "username": "str",
-    "remote_forwarding": ["str"],
-    "local_forwarding": ["str"],
+    "remote_forwarding": [
+      "str"
+    ],
+    "local_forwarding": [
+      "str"
+    ],
     "other_ssh_options": "str",
     "monitor_port": "int",
     "gatetime": "int"
