@@ -1,5 +1,5 @@
 ---
-version: 12.8.1
+version: 12.8.2
 slug: samba
 name: Samba share
 description: Expose ApexOS folders with SMB/CIFS

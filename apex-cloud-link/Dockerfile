@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/apexinfosysindia/addon-base:15.0.4
+ARG BUILD_FROM=ghcr.io/apexinfosysindia/addon-base:19.0.0
 FROM ${BUILD_FROM}
 
 # Add env
