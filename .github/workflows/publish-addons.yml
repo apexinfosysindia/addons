@@ -355,7 +355,15 @@ jobs:
             exit 1
           fi
           echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY" -u "$REGISTRY_USER" --password-stdin
-          docker push "$REGISTRY_NS/$ARCH-addon-$SLUG:$VERSION"
+          ref="$REGISTRY_NS/$ARCH-addon-$SLUG:$VERSION"
+          # Matches upstream's --docker-hub-check: a merge that doesn't bump
+          # this add-on's version must not silently overwrite the already-
+          # shipped tag with different bytes.
+          if docker manifest inspect "$ref" > /dev/null 2>&1; then
+            echo "::warning::$ref already exists in the registry — bump config.json version to republish. Skipping push."
+          else
+            docker push "$ref"
+          fi
 
       # See the identical step in `mirror-bases` above. This job matters more for
       # it: its aarch64 leg runs on the macOS builder, which is also the OS image
