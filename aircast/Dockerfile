@@ -14,7 +14,7 @@ ARG AIRCAST_VERSION="1.9.3"
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
-        unzip=6.0-29 \
+        unzip \
     \
     && curl -J -L -o /tmp/airconnect.zip \
       "https://github.com/philippe44/AirConnect/releases/download/${AIRCAST_VERSION}/AirConnect-${AIRCAST_VERSION}.zip" \

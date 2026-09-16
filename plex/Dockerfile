@@ -17,8 +17,8 @@ RUN \
     \
     && apt-get install -y --no-install-recommends \
         xmlstarlet>="1.6.1-4" \
-        uuid-runtime=2.41-5 \
-        unrar=1:7.1.8-1 \
+        uuid-runtime \
+        unrar \
     \
     && if [ "${BUILD_ARCH}" = "aarch64" ]; then ARCH="arm64"; fi \
     && if [ "${BUILD_ARCH}" = "amd64" ]; then ARCH="amd64"; fi \
