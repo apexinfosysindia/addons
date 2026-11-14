@@ -1,10 +1,26 @@
+# Changelog
+
+## 6.3.1
+
+Tracks upstream 6.3.1 (covers 6.1.0 to 6.3.1).
+
+- New `log_level` option (`debug`, `info`, `warning`, `error`, `critical`,
+  default `info`). Set it to `warning` to stop logging every web request,
+  including the container health check.
+- The health check calls the editor's own `/api/netstat` endpoint, which does
+  not reach the ApexOS API, starts checking every 5 seconds while the editor
+  boots, then every 30 seconds.
+- Uses the `all_app_configs` folder mapping.
+- Builds on the ApexOS base image 3.24-2026.08.0 (Alpine 3.24).
+- Not carried over: upstream's editor package 0.7.0 (clean shutdown on
+  SIGTERM, typo fixes). The add-on keeps shipping the ApexOS Configurator 0.6.1
+  from the org package index until that fork is updated.
+
 ## 6.1.2
 
 - Restore the core API grant lost in the porting wave (fixes the
   repeating "Not permitted API access" warning and entity
   autocomplete in the editor).
-
-# Changelog
 
 ## 6.1.1
 
