@@ -1,5 +1,5 @@
 ---
-version: 9.1.0
+version: 9.3.0
 breaking_versions: [9.0.0]
 slug: matter_server
 image: registry.apexinfosys.in/apexos/{arch}-addon-matter_server
@@ -12,15 +12,14 @@ arch:
 discovery:
   - matter
 apexos_api: true
-# IPC is only used within the add-on
-host_ipc: false
 host_network: true
 host_dbus: true
 ingress: true
 ingress_port: 5580
+panel_icon: mdi:matter
 init: false
 map:
-  - type: addon_config
+  - type: app_config
     read_only: false
 options:
   log_level: info
@@ -42,5 +41,4 @@ schema:
   matter_server_version: str?
 ports:
   5580/tcp: null
-stage: stable
 startup: services

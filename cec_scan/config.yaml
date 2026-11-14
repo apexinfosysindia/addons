@@ -1,5 +1,5 @@
 ---
-version: "4.0"
+version: "4.1.0"
 slug: cec_scan
 image: registry.apexinfosys.in/apexos/{arch}-addon-cec_scan
 name: CEC Scanner
@@ -9,8 +9,6 @@ arch:
   - amd64
 boot: manual
 description: Scan for HDMI CEC devices
-options: {}
-schema: {}
 startup: once
 video: true
 init: false

@@ -51,15 +51,15 @@ and 8081 in the OpenThread REST API port field).
 
 App configuration:
 
-| Configuration      | Description                                            |
-|--------------------|--------------------------------------------------------|
-| device (mandatory) | Serial port where the OpenThread RCP Radio is attached |
-| baudrate           | Serial port baudrate (depends on firmware)   |
-| flow_control       | If hardware flow control should be enabled (depends on firmware) |
-| otbr_log_level     | Set the log level of the OpenThread BorderRouter Agent     |
-| firewall           | Enable OpenThread Border Router firewall to block unnecessary traffic |
-| nat64              | Enable NAT64 to allow Thread devices accessing IPv4 addresses |
-| network_device     | IP address and port to connect to a network-based RCP (see below) |
+| Configuration      | Description                                                                       |
+| ------------------ | --------------------------------------------------------------------------------- |
+| device (mandatory) | Serial port where the OpenThread RCP Radio is attached                            |
+| baudrate           | Serial port baudrate (depends on firmware)                                        |
+| flow_control       | If hardware flow control should be enabled (depends on firmware)                  |
+| otbr_log_level     | Set the log level of the OpenThread BorderRouter Agent                            |
+| firewall           | Enable OpenThread Border Router firewall to block unnecessary traffic             |
+| nat64              | Enable NAT64 to allow Thread devices accessing IPv4 addresses                     |
+| network_device     | IP address and port to connect to a network-based RCP (see below)                 |
 | beta               | Enable beta mode to run a newer, experimental version of OpenThread Border Router |
 
 > [!WARNING]

@@ -1,5 +1,5 @@
 ---
-version: "6.1.2"
+version: "6.3.1"
 slug: configurator
 image: registry.apexinfosys.in/apexos/{arch}-addon-configurator
 name: File editor
@@ -13,7 +13,7 @@ apexos_core_api: true
 ingress: true
 init: false
 map:
-  - all_addon_configs:rw
+  - all_app_configs:rw
   - backup:rw
   - apexos_config:rw
   - media:rw
@@ -28,6 +28,7 @@ options:
     - .cloud
     - .storage
     - deps
+  log_level: info
   ssh_keys: []
 panel_icon: mdi:wrench
 schema:
@@ -36,5 +37,6 @@ schema:
   git: bool
   ignore_pattern:
     - str
+  log_level: list(debug|info|warning|error|critical)?
   ssh_keys:
     - str
