@@ -1,5 +1,5 @@
 ---
-version: 10.3.0
+version: 10.6.0
 slug: ssh
 image: registry.apexinfosys.in/apexos/{arch}-addon-ssh
 name: Terminal & SSH
@@ -15,8 +15,8 @@ host_dbus: true
 ingress: true
 init: false
 map:
-  - addons:rw
-  - all_addon_configs:rw
+  - local_apps:rw
+  - all_app_configs:rw
   - backup:rw
   - apexos_config:rw
   - media:rw
