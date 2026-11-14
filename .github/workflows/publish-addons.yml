@@ -109,9 +109,16 @@ jobs:
             exit 1
           fi
           echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY" -u "$REGISTRY_USER" --password-stdin
-          docker buildx imagetools create \
-            --tag "$REGISTRY_NS/matterjs-server:1.2.6" \
-            ghcr.io/matter-js/matterjs-server:1.2.6
+          # Both tags: 1.2.6 is what the matter_server currently on main builds
+          # FROM, 1.5.5 is what the next release builds FROM. Mirroring the new
+          # tag ahead of the version bump keeps main buildable in between, and
+          # lets the bump's pull request build (the mirror job itself only runs
+          # on a push to main). Drop 1.2.6 once nothing builds FROM it.
+          for tag in 1.2.6 1.5.5; do
+            docker buildx imagetools create \
+              --tag "$REGISTRY_NS/matterjs-server:${tag}" \
+              "ghcr.io/matter-js/matterjs-server:${tag}"
+          done
 
       # The other half of the `refresh ghcr credential` step above. That step
       # exists because a previous job left an expired ghcr entry in this shared
