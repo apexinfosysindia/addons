@@ -1,5 +1,5 @@
 ---
-version: 3.0.2
+version: 3.4.0
 breaking_versions: [3.0.0]
 slug: openthread_border_router
 image: registry.apexinfosys.in/apexos/{arch}-addon-openthread_border_router
@@ -13,13 +13,12 @@ gpio: true
 apexos_api: true
 discovery:
   - otbr
-# IPC is only used within the add-on
-host_ipc: false
 host_network: true
 host_uts: true
 privileged:
   - IPC_LOCK
   - NET_ADMIN
+  - NET_RAW
 devices:
   - /dev/net/tun
 init: false
