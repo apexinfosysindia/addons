@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.1.0
+
+- Builds on the ApexOS base image 3.23-2026.08.0 (Alpine 3.23, latest patch
+  release) instead of 3.23-2026.06.1.
+- Empty `options` and `schema` entries dropped from the config; no behaviour
+  change.
+- Tracks upstream 4.1.0. libCEC stays at 7.1.1.
+
 ## 4.0
 
 - Initial ApexOS port of the CEC Scanner add-on (upstream 4.0).
