@@ -1,5 +1,5 @@
 ---
-version: 12.8.2
+version: 12.11.0
 slug: samba
 name: Samba share
 description: Expose ApexOS folders with SMB/CIFS
@@ -12,8 +12,8 @@ host_network: true
 image: registry.apexinfosys.in/apexos/{arch}-addon-samba
 init: false
 map:
-  - addons:rw
-  - all_addon_configs:rw
+  - local_apps:rw
+  - all_app_configs:rw
   - backup:rw
   - apexos_config:rw
   - media:rw
@@ -24,8 +24,8 @@ options:
   password: null
   workgroup: WORKGROUP
   enabled_shares:
-    - addons
-    - addon_configs
+    - local_apps
+    - app_configs
     - backup
     - config
     - media
@@ -35,6 +35,7 @@ options:
   apple_compatibility_mode: true
   netbios: true
   local_master: true
+  network_discovery: true
   server_signing: "default"
   veto_files:
     - ._*
@@ -54,11 +55,12 @@ schema:
   password: password
   workgroup: str
   enabled_shares:
-    - "match(^(?i:(addons|addon_configs|backup|config|media|share|ssl))$)"
+    - "match(^(?i:(local_apps|app_configs|addons|addon_configs|backup|config|media|share|ssl))$)"
   compatibility_mode: bool
   apple_compatibility_mode: bool
   netbios: bool
   local_master: bool
+  network_discovery: bool
   server_signing: list(default|auto|mandatory|disabled)
   veto_files:
     - str

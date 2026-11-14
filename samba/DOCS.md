@@ -16,19 +16,25 @@ Follow these steps to get the app (formerly known as add-on) installed on your s
 
 ## Connection
 
-If you are on Windows you use `\\<IP_ADDRESS>\`, if you are on MacOS you use `smb://<IP_ADDRESS>` to connect to the shares.
+If you are on Windows you use `\\<IP_ADDRESS>\`, if you are on macOS you use `smb://<IP_ADDRESS>` to connect to the shares.
 
 This app exposes the following directories over smb (samba):
 
-Directory | Description
--- | --
-`addons` | This is for your local apps.
-`addon_configs` | This is for the configuration files of your apps.
-`backup` | This is for your backups.
-`config` | This is for your ApexOS configuration.
-`media` | This is for local media files.
-`share` | This is for your data that is shared between apps and ApexOS.
-`ssl` | This is for your SSL certificates.
+| Directory     | Description                                                    |
+| ------------- | -------------------------------------------------------------- |
+| `local_apps`  | This is for your local apps.                                   |
+| `app_configs` | This is for the configuration files of your apps.              |
+| `backup`      | This is for your backups.                                      |
+| `config`      | This is for your ApexOS configuration.                         |
+| `media`       | This is for local media files.                                 |
+| `share`       | This is for your data that is shared between apps and ApexOS.  |
+| `ssl`         | This is for your SSL certificates.                             |
+
+The `local_apps` and `app_configs` shares were previously named `addons` and
+`addon_configs`. Existing configurations are migrated to the new names
+automatically. Both the new and legacy share names stay exposed and point to
+the same directories, so existing connections keep working while you move to
+the new names.
 
 ## Configuration
 
@@ -39,8 +45,8 @@ username: apexos
 password: YOUR_PASSWORD
 workgroup: WORKGROUP
 enabled_shares:
-  - addons
-  - addon_configs
+  - local_apps
+  - app_configs
   - backup
   - config
   - media
@@ -50,6 +56,7 @@ compatibility_mode: false
 apple_compatibility_mode: true
 netbios: true
 local_master: true
+network_discovery: true
 server_signing: "default"
 veto_files:
   - ._*
@@ -121,6 +128,17 @@ When NetBIOS is enabled, try and become a local master browser on a subnet.
 
 Defaults to `true`.
 
+### Option: `network_discovery`
+
+Advertise the host on the network using Web Services Dynamic Discovery, so it
+appears automatically under Network in Windows File Explorer. Disable this if
+you connect to the shares by hostname or IP address and do not want the host
+to announce itself on the network.
+
+Disabling this has no effect on share availability; only on discovery.
+
+Defaults to `true`.
+
 ### Option: `server_signing`
 
 Configure the SMB server signing requirement. This option can improve security by requiring message signing, which helps prevent man-in-the-middle attacks.
@@ -133,5 +151,3 @@ Defaults to `default`.
 Got questions or found a bug? Reach the ApexOS team at
 [support@apexinfosys.in](mailto:support@apexinfosys.in) or open an issue on
 [GitHub](https://github.com/apexinfosysindia/addons/issues).
-
-[repository]: https://github.com/apexos-addons/repository
