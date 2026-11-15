@@ -1,5 +1,21 @@
 # Changelog
 
+## 6.3.1.1
+
+ApexOS rebuild of upstream 6.3.1. Our rebuilds of an unchanged upstream
+version take a fourth number (6.3.1.1, 6.3.1.2, ...): a `-N` suffix would
+sort as older than 6.3.1, so the update would not be offered as one.
+
+- Ships ApexOS Configurator 0.7.0, which carries the changes of upstream's
+  editor 0.7.0:
+  - The editor shuts down cleanly when the app is stopped (it handles
+    SIGTERM and exits with code 0), so a manual stop is no longer reported
+    as a failure.
+  - "Check ApexOS Configuration" is back in the menu and works: it asks the
+    core to check the configuration and shows "valid" or the errors.
+  - Typo fixes in the interface.
+  - The About dialog shows the editor's real version.
+
 ## 6.3.1
 
 Tracks upstream 6.3.1 (covers 6.1.0 to 6.3.1).

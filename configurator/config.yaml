@@ -1,5 +1,5 @@
 ---
-version: "6.3.1"
+version: "6.3.1.1"
 slug: configurator
 image: registry.apexinfosys.in/apexos/{arch}-addon-configurator
 name: File editor
