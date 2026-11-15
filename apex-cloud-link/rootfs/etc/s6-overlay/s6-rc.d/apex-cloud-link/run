@@ -132,7 +132,7 @@ ha_api_get() {
 
     if [ -z "${SUPERVISOR_TOKEN:-}" ]; then
         if [ "$GOOGLE_WARNED_NO_SUPERVISOR_TOKEN" -eq 0 ]; then
-            bashio::log.warning "Entity sync disabled: SUPERVISOR_TOKEN unavailable. Ensure addon has required API permissions."
+            bashio::log.warning "Entity sync disabled: SUPERVISOR_TOKEN unavailable. Ensure the app has required API permissions."
             GOOGLE_WARNED_NO_SUPERVISOR_TOKEN=1
         fi
         return
@@ -540,7 +540,7 @@ except Exception:
     entities_count=$(printf '%s' "$entities_json" | jq -r 'length' 2>/dev/null || printf '0')
     if [ "$entities_count" -eq 0 ]; then
         if [ "$GOOGLE_WARNED_EMPTY_ENTITY_SYNC" -eq 0 ]; then
-            bashio::log.warning "Google entity sync produced zero entities. Check states and addon API permissions."
+            bashio::log.warning "Google entity sync produced zero entities. Check states and app API permissions."
             GOOGLE_WARNED_EMPTY_ENTITY_SYNC=1
         fi
         return
@@ -2287,7 +2287,7 @@ trap cleanup EXIT INT TERM
 
 if [ -z "$SUBDOMAIN" ] || [ -z "$ACCESS_TOKEN" ]; then
     bashio::log.error "Subdomain or Access Token is missing"
-    bashio::log.error "Please register in Cloud Connect and configure the addon options"
+    bashio::log.error "Please register in Cloud Connect and configure the app options"
     sleep infinity
 fi
 

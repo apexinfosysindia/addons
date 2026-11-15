@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.7
+
+- Log messages now say "app" instead of "addon", matching the rest of ApexOS.
+  No functional change.
+
 ## 1.5.6
 
 - Rebuilt on ApexOS add-on base 19.0.0 (Alpine 3.22). The 32-bit architectures

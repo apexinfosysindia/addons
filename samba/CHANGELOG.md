@@ -1,5 +1,19 @@
 # Changelog
 
+## 12.11.0.1
+
+ApexOS rebuild of upstream 12.11.0. Our rebuilds of an unchanged upstream
+version take a fourth number (12.11.0.1, 12.11.0.2, ...): a `-N` suffix
+would sort as older than 12.11.0, so the update would not be offered as one.
+
+- Uses upstream's s6 `user-bundles.d` service layout. The services, their
+  start order and the `netbios` and `network_discovery` switches behave as
+  before; start-up no longer logs the s6 layout deprecation warning.
+- Builds on the ApexOS base image 3.24-2026.11.0 (Alpine 3.24.4,
+  s6-overlay 3.2.3.2), the base upstream uses for 12.11.0. Samba stays at
+  4.23.8.
+- Supervisor-side log timestamps (`log_format`) are still not carried over.
+
 ## 12.11.0
 
 - The `addons` and `addon_configs` shares are now named `local_apps` and

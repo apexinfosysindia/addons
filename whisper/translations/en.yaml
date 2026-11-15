@@ -76,7 +76,7 @@ configuration:
       for updates.
 
       Leave this off until your models have downloaded, then turn it on to keep
-      the add-on offline and skip the update check on every request.
+      the app offline and skip the update check on every request.
   debug_logging:
     name: Debug logging
     description: >-

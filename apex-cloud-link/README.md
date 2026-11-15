@@ -1,6 +1,6 @@
 # Apex Cloud Link
 
-ApexOS addon that connects your device to Cloud Connect using FRP.
+ApexOS app that connects your device to Cloud Connect using FRP.
 
 ## What it does
 

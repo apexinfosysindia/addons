@@ -42,7 +42,7 @@ For Thread networks we also try to discover the border routers and show informat
 Note: you might also see "Unknown devices" or "External routers" in the network visualizations. This can mean different things depending on the network topology. They could be other Thread devices that do not belong to the Matter Server's fabric, or they could be stale data from the devices (for example, many sleepy battery devices do not update their network information regularly).
 
 ## Can I switch back to the old Matter Server?
-No. The new Matter Server was tested as a "Beta" with the community for the last four months, and we did our best to make sure it works as expected. If you run into any issues, report them in the [ApexOS add-ons repository](https://github.com/apexinfosysindia/addons/issues) and we will try to fix them as soon as possible.
+No. The new Matter Server was tested as a "Beta" with the community for the last four months, and we did our best to make sure it works as expected. If you run into any issues, report them in the [ApexOS apps repository](https://github.com/apexinfosysindia/addons/issues) and we will try to fix them as soon as possible.
 
 ## Troubleshooting
 
