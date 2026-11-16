@@ -1,5 +1,5 @@
 ---
-version: 1.4.5
+version: 1.4.5.1
 slug: speech-to-phrase
 image: registry.apexinfosys.in/apexos/{arch}-addon-speech-to-phrase
 name: Speech-to-Phrase
@@ -15,7 +15,7 @@ map:
   - share:rw
 backup_exclude:
   - "*/models/*"
-apexos_api: true
+apexos_core_api: true
 options:
   debug_logging: false
 schema:
