@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.5.1
+
+- Fix access to ApexOS: the app asked for Supervisor access instead of the
+  core access it needs, so its connection was refused, it retried every
+  couple of seconds ("Unauthorized WebSocket access!" in the Supervisor log)
+  and it never finished starting. It now declares `apexos_core_api`, as
+  upstream's app does. No change to the app itself.
+
 ## 1.4.5
 
 - Source refresh (1.4.3-apexos.2): docs/test housekeeping and the
